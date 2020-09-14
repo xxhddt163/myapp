@@ -9,6 +9,7 @@ from myapp.structure import Stack
 def isdouble(string: str) -> bool:
     """判断给定字符串的括号、中括号、大括号是否成对出现"""
     s = Stack()
+
     for each in string:
         if each in "([{":  # 遍历每一个字符，将开括号存入栈中
             s.push(each)
@@ -17,6 +18,7 @@ def isdouble(string: str) -> bool:
                 return False
             elif not match(each, s):
                 return False
+
     if not s.isEmpty():
         return False
     else:

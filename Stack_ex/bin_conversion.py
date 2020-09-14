@@ -10,11 +10,14 @@ def bin_convert(digit: int, num: int) -> str:
     s = Stack()
     temp = "0123456789ABCDEF"
     result = ''
+
     while digit != 0:
         s.push(digit % num)
         digit = digit // num
+
     while not s.isEmpty():
         result += temp[s.pop()]
+
     return result
 
 
