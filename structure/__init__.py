@@ -1,6 +1,5 @@
 class Stack:
     """构建栈"""
-
     def __init__(self):
         self.items = []
 
@@ -27,7 +26,6 @@ class Stack:
 
 class Queue:
     """构建队列"""
-
     def __init__(self):
         self.item = []
 
