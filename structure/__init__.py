@@ -12,6 +12,10 @@ class Stack:
         """返回栈的元素个数"""
         return len(self.items)
 
+    def peek(self):
+        """返回栈顶的元素"""
+        return self.items[-1]
+
     def push(self, item):
         """栈顶加入元素"""
         self.items.append(item)
