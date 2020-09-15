@@ -73,3 +73,7 @@ class Deque:
     def isEmpty(self):
         """返回队列是否为空"""
         return self.items == []
+
+    def size(self):
+        """返回队列元素个数"""
+        return len(self.items)
