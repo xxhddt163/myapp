@@ -31,7 +31,7 @@ class Queue:
 
     def enqueue(self, item):
         """向队尾增加元素"""
-        self.item.index(0, item)
+        self.item.insert(0, item)
 
     def dequeue(self):
         """向队首弹出数据"""
