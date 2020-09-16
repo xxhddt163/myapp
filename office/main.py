@@ -1,7 +1,7 @@
 import datetime
 import easygui
 import openpyxl
-import os
+from myapp.office.setting import Setting
 
 if __name__ == '__main__':
     easygui.msgbox("请选择考勤文件所在位置")
