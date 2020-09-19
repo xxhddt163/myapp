@@ -1,26 +1,37 @@
 import datetime
 import easygui
 import openpyxl
-import copy
 from myapp.office.setting import Setting
 from openpyxl.comments import Comment  # 批注相关的模块
 from openpyxl import styles
 
-department = {}
-time_set = Setting()
+department = {}  # 存放名字与对应部门
+time_set = Setting()  # 设置部门上下班时间
 
 
 def main():
     """遍历考勤表内员工名字,将名字与对应的部门写入字典"""
     for number in range(5, 999, 2):
         if sheet_work['U' + str(number)].value is not None:
-            department[sheet_work['K' + str(number)].value] = sheet_work['U' + str(number)].value  # 存放名字与对应部门
+            department[sheet_work['K' + str(number)].value] = sheet_work['U' + str(number)].value
             trunk_line = find_line(sheet_work['K' + str(number)].value)  # 名字在汇总表中的行
+
+            if trunk_line is None:  # 考勤表中出现的人名未出现在统计表中
+                print(f"{sheet_work['K' + str(number)].value}未出现在考勤统计表中")
+                choose = input("是否继续统计？(y/n)")
+                if choose.lower() == "y":
+                    continue
+                else:
+                    raise TypeError
+
             for row in range(1, 32):
-                if sheet_work[converttotitle(row) + str(number + 1)].value is not None:
+
+                if sheet_work[convert2title(row) + str(number + 1)].value is not None:
                     up_time, down_time = crow_time(row, number)  # 上、下班时间
                     if department[sheet_work['K' + str(number)].value] != "招商运营部":
                         check_time(up_time, down_time, trunk_line, row, number)
+                    elif department[sheet_work['K' + str(number)].value] == "招商运营部":
+                        check_time_bus(up_time, down_time, trunk_line, row, number)
                 else:
                     continue
         else:
@@ -37,51 +48,150 @@ def find_line(name):
 
 def crow_time(row, number):
     """遍历考勤"""
-    return sheet_work[converttotitle(row) + str(number + 1)].value[:5], \
-           sheet_work[converttotitle(row) + str(number + 1)].value[-5:]
+    return sheet_work[convert2title(row) + str(number + 1)].value[:5], \
+           sheet_work[convert2title(row) + str(number + 1)].value[-5:]
 
 
 def check_time(up_time, down_time, trunk_line, row, number):
-    """非招商运营部检查考勤"""
-    if trunk_line is None:  # 考勤表中出现的人名未出现在统计表中
-        print(f"{sheet_work['K' + str(number)].value}未出现在考勤统计表中")
-        choose = input("是否继续统计？(y/n)")
-        if choose.lower() == "y":
-            return None
-        else:
-            raise TypeError
+    """其他部门检查考勤"""
 
-    uptime_hour = int(up_time.split(":")[0])
+    up_hour = int(up_time.split(":")[0])
     up_min = int(up_time.split(":")[1])
     set_up_hour = int(time_set.uptime.split(":")[0])
     set_up_min = int(time_set.uptime.split(":")[1])
     down_hour = int(down_time.split(":")[0])
-    downtime_min = int(down_time.split(":")[1])
+    down_min = int(down_time.split(":")[1])
     set_down_hour = int(time_set.downtime.split(":")[0])
     set_down_min = int(time_set.downtime.split(":")[1])
 
-    if uptime_hour < set_up_hour or uptime_hour == set_up_hour and up_min <= set_up_min:  # 判定上班时间
-        if down_hour == set_down_hour and downtime_min >= set_down_min or down_hour > set_down_hour:  # 判定下班时间
-            sheet_trunk[converttotitle(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+    if (up_hour < set_up_hour) or \
+            (up_hour == set_up_hour and up_min <= set_up_min):  # 判定上班时间
+        if (down_hour == set_down_hour and down_min >= set_down_min) or \
+                (down_hour > set_down_hour):  # 判定下班时间
+            sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+        else:
+            sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                sheet_work[convert2title(row) + str(number + 1)].value
     else:
-        if up_time != down_time and down_hour - uptime_hour >= 8:
-            sheet_trunk[converttotitle(row + 4) + str(trunk_line)].value = \
-                sheet_work[converttotitle(row) + str(number + 1)].value
+        if (up_time != down_time) and (down_hour - up_hour >= 8):
+            sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                sheet_work[convert2title(row) + str(number + 1)].value
             up_cell_format(row, trunk_line)  # 上班异常字体颜色改红
             up_comment(row, trunk_line, up_time, down_time)  # 统计迟到时间并加入批注
         else:
-            sheet_trunk[converttotitle(row + 4) + str(trunk_line)].value = \
-                sheet_work[converttotitle(row) + str(number + 1)].value
+            sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                sheet_work[convert2title(row) + str(number + 1)].value
+
+
+def check_time_bus(up_time, down_time, trunk_line, row, number):
+    """招商运营部统计考勤"""
+
+    up_hour = int(up_time.split(":")[0])
+    up_min = int(up_time.split(":")[1])
+    down_hour = int(down_time.split(":")[0])
+    down_min = int(down_time.split(":")[1])
+    set_up_hour1 = int(time_set.uptime_bus.split(":")[0])
+    set_up_hour2 = int(time_set.uptime_bus2.split(":")[0])
+    set_up_min1 = int(time_set.uptime_bus.split(":")[1])
+    set_up_min2 = int(time_set.uptime_bus2.split(":")[1])
+    set_down_hour1 = int(time_set.downtime_bus.split(":")[0])
+    set_down_hour2 = int(time_set.downtime_bus2.split(":")[0])
+    set_down_min1 = int(time_set.downtime_bus.split(":")[1])
+    set_down_min2 = int(time_set.downtime_bus2.split(":")[1])
+
+    if up_hour <= set_up_hour1:
+        if (up_hour == set_up_hour1) and (up_min <= set_up_min1):
+            if (down_hour == set_down_hour1) and (down_min >= set_down_min1) or \
+                    (down_hour > set_down_hour1):
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+            else:
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                    sheet_work[convert2title(row) + str(number + 1)].value
+        elif up_hour < set_up_hour1:
+            if (down_hour == set_down_hour1) and (down_min >= set_down_min1) or \
+                    (down_hour > set_down_hour1):
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+            else:
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                    sheet_work[convert2title(row) + str(number + 1)].value
+        elif (up_hour == set_up_hour1) and (up_min > set_up_min1):
+            if (down_hour == set_down_hour2) and (down_min >= set_down_min2) or \
+                    (down_hour > set_down_hour2):
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+            else:
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                    sheet_work[convert2title(row) + str(number + 1)].value
+                up_cell_format(row, trunk_line)
+                up_comment_bus(row, trunk_line, up_time, down_time)
+    if up_hour > set_up_hour1:
+        if (up_hour == set_up_hour2) and (up_min <= set_up_min2):
+            if (down_hour == set_down_hour2) and (down_min >= set_down_min2) or \
+                    (down_hour > set_down_hour2):
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = "√"  # 正常考勤打钩
+            else:
+                sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                    sheet_work[convert2title(row) + str(number + 1)].value
+        else:
+            sheet_trunk[convert2title(row + 4) + str(trunk_line)].value = \
+                sheet_work[convert2title(row) + str(number + 1)].value
+            up_cell_format(row, trunk_line)
+            up_comment_bus(row, trunk_line, up_time, down_time)
 
 
 def up_comment(row, trunk_line, up_time, down_time):
     """非招商部门上班考勤异常自动填批注"""
-    comment = Comment("考勤异常,上班打卡时间为(%s),下班打卡时间为(%s),迟到%s小时%s分钟"
-                      % (up_time, down_time,
-                         int(up_time.split(':')[0]) - int(time_set.uptime.split(':')[0]),
-                         int(up_time.split(':')[1]) - int(time_set.uptime.split(':')[1])), "")
+    up_hour = int(up_time.split(':')[0])
+    set_up_hour = int(time_set.uptime.split(':')[0])
+    up_min = int(up_time.split(':')[1])
+    set_up_time = int(time_set.uptime.split(':')[1])
+
+    comment = Comment(f"考勤异常,上班打卡时间为{up_time},下班打卡时间为{down_time},\
+                      迟到{up_hour - set_up_hour}小时{up_min - set_up_time}分钟", "")
     comment.width, comment.height = 120, 120
-    sheet_trunk[converttotitle(row + 4) + str(trunk_line)].comment = comment
+    sheet_trunk[convert2title(row + 4) + str(trunk_line)].comment = comment
+
+
+def up_comment_bus(row, trunk_line, up_time, down_time):
+    """招商部门上班考勤异常自动填批注"""
+    up_hour = int(up_time.split(":")[0])
+    up_min = int(up_time.split(":")[1])
+    down_hour = int(down_time.split(":")[0])
+    down_min = int(down_time.split(":")[1])
+    set_up_hour1 = int(time_set.uptime_bus.split(":")[0])
+    set_up_hour2 = int(time_set.uptime_bus2.split(":")[0])
+    set_up_min1 = int(time_set.uptime_bus.split(":")[1])
+    set_up_min2 = int(time_set.uptime_bus2.split(":")[1])
+
+    if (up_hour == set_up_hour1) and (down_hour - up_hour >= 8):
+        comment = Comment("考勤异常,上班打卡时间(%s:%s),下班打卡时间(%s:%s),迟到%s小时%s分钟"
+                          % (up_hour, up_min,
+                             down_hour, down_min,
+                             up_hour - set_up_hour1,
+                             up_min - set_up_min1), "", )
+        comment.width, comment.height = 120, 120
+        sheet_trunk[convert2title(row + 4) + str(trunk_line)].comment = comment
+    elif (up_hour == set_up_hour2) and (down_hour - up_hour >= 8):
+        comment = Comment("考勤异常,上班打卡时间(%s:%s),下班打卡时间(%s:%s),迟到%s小时%s分钟"
+                          % (up_hour, up_min,
+                             down_hour, down_min,
+                             up_hour - set_up_hour2,
+                             up_min - set_up_min2), "")
+        comment.width, comment.height = 120, 120
+        sheet_trunk[convert2title(row + 4) + str(trunk_line)].comment = comment
+    elif down_hour - up_hour >= 8:
+        comment = Comment("考勤异常,上班打卡时间(%s:%s),下班打卡时间(%s:%s),迟到%s小时%s分钟"
+                          % (up_hour, up_min,
+                             down_hour, down_min,
+                             up_hour - set_up_hour2,
+                             up_min - set_up_min2), "")
+        comment.width, comment.height = 120, 120
+        sheet_trunk[convert2title(row + 4) + str(trunk_line)].comment = comment
+
+
+def up_cell_format(row, trunk_line):
+    """设置上班异常考勤单元格文字颜色"""
+    sheet_trunk[convert2title(row + 4) + str(trunk_line)].font = \
+        styles.Font(name='Aria', size=8, color='00FF0000')  # 不正常上班考勤填充红色
 
 
 def save_file():
@@ -91,23 +201,17 @@ def save_file():
     excel_trunk.save(file_save)
 
 
-def up_cell_format(row, trunk_line):
-    """设置上班异常考勤单元格文字颜色"""
-    sheet_trunk[converttotitle(row + 4) + str(trunk_line)].font = \
-        styles.Font(name='Aria', size=8, color='00FF0000')  # 不正常上班考勤填充红色
-
-
-def converttotitle(n):
+def convert2title(n):
     """将数字转换成EXCEL对应的字母列"""
-    rstr = ""
+    title = ""
     while n != 0:
         res = n % 26
         if res == 0:
             res = 26
             n -= 26
-        rstr = chr(ord('A') + res - 1) + rstr
+        title = chr(ord('A') + res - 1) + title
         n = n // 26
-    return rstr
+    return title
 
 
 if __name__ == '__main__':
