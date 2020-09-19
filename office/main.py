@@ -9,7 +9,7 @@ time_set = Setting()  # 设置部门上下班时间
 
 
 def main():
-    """遍历考勤表内员工名字,将名字与对应的部门写入字典"""
+    """主函数，遍历考勤表的所有部门及考勤"""
     for number in range(5, 999, 2):
         if sheet_work['U' + str(number)].value is not None:
             trunk_line = find_line(sheet_work['K' + str(number)].value)  # 名字在汇总表中的行
@@ -22,7 +22,7 @@ def main():
                 else:
                     raise TypeError
 
-            for row in range(1, 32):
+            for row in range(1, 32):  # 遍历1-31号考勤
                 if sheet_work[convert2title(row) + str(number + 1)].value is not None:  # 当日是否无打卡记录
                     up_time, down_time = crow_time(row, number)  # 上、下班时间
                     if sheet_work['U' + str(number)].value != "招商运营部":
@@ -126,6 +126,7 @@ def up_cell_format(row, trunk_line):
 
 
 def save_file():
+    """保存文件"""
     easygui.msgbox("考勤统计完成，请选择汇总文件保存位置")
     file_save = easygui.filesavebox(default=r"C:\Users\Administrator\Desktop\*.xlsx",
                                     filetypes=["*.xlsx"])
