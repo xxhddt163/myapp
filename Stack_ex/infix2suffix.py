@@ -10,7 +10,7 @@ def infix2suffix(string: str) -> str:
     result = []
     priority = {'/': 3, '*': 3, '-': 2, '+': 2, '(': 1}  # 表示各种符号的优先级
     string = string.lower().split()  # 将字符串转换成列表
-    
+
     for each in string:
         if each in constant:  # 如果遍历的对象为常数，则直接将该值加入输出结果的列表中
             result.append(each)
