@@ -1,3 +1,12 @@
+# 二分查找可能出现的三种情况、
+# 1、无重复元素的序列
+# 2、有重复元素的序列返回左边界索引
+# 3、有重复元素的序列返回右边界索引
+"""若目标值不在序列中则返回 -1
+算法可视化地址：https://www.cs.usfca.edu/~galles/visualization/Search.html
+"""
+
+
 class Binary_Search:
     def __init__(self, nums: list, target: int):
         self.nums = nums
@@ -30,7 +39,7 @@ class Binary_Search:
         while left <= right:
             middle = left + (right - left) // 2
             if self.nums[middle] == self.target:
-                right = middle - 1
+                right = middle - 1  # 注意这里跟标准的二分查找变化了，由于是找左边界，所以减小右边界的值
             elif self.nums[middle] < self.target:
                 left = middle + 1
             elif self.nums[middle] > self.target:
@@ -38,7 +47,7 @@ class Binary_Search:
 
         if left >= len(self.nums) or self.nums[left] != self.target:
             return -1
-        return left
+        return left  # 在有重复的元素时返回左边界是返回left
 
     def right_bound(self):
         """给出右边界的索引
@@ -50,14 +59,14 @@ class Binary_Search:
         while left <= right:
             middle = left + (right - left) // 2
             if self.nums[middle] == self.target:
-                left = middle + 1
+                left = middle + 1  # 注意这里跟标准的二分查找变化了，由于是找右边界，所以增大左边界的值
             elif self.nums[middle] > self.target:
                 right = middle - 1
             elif self.nums[middle] < self.target:
                 left = middle + 1
         if right < 0 or self.nums[right] != self.target:
             return -1
-        return right
+        return right  # 在有重复的元素时返回right
 
 
 if __name__ == '__main__':
@@ -70,7 +79,7 @@ if __name__ == '__main__':
     print(b.left_bound())
     b = Binary_Search([1, 2, 2, 2, 2, 3, 4, 5], 3)
     print(b.left_bound())
-    b = Binary_Search([1, 2, 2, 2, 2, 3, 4, 5], 8)
+    b = Binary_Search([1, 2, 2, 3, 4], 2)
     print(b.left_bound())
 
     b = Binary_Search([1, 2, 2, 2, 2, 3, 4, 5], 2)
