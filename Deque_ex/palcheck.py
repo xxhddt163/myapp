@@ -3,7 +3,7 @@ from myapp.structure import Deque
 
 def palcheck(string: str) -> bool:
     """判断给定字符串是否为回文字符串"""
-    d = Deque()
+    d = Deque.Deque()
     for each in string:
         d.addRear(each)
 
