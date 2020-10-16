@@ -3,7 +3,7 @@ from myapp.structure import Queue
 
 def hotpotato(names: list, num: int) -> str:
     """通过队列解决热土豆问题"""
-    contingent = Queue()
+    contingent = Queue.Queue()
     for name in names:
         contingent.enqueue(name)
 

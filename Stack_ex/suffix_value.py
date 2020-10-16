@@ -1,4 +1,4 @@
-from myapp.structure import Stack
+from myapp.structure.Stack import Stack
 
 
 def suffix_value(string: str) -> int:

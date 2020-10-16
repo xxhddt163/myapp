@@ -3,7 +3,7 @@
 以下这几种表示法是错的： (] [} ([{]})
 """
 
-from myapp.structure import Stack
+from myapp.structure.Stack import Stack
 
 
 def isdouble(string: str) -> bool:
