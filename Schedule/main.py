@@ -1,22 +1,19 @@
 import openpyxl
 import easygui
 import re
+import pickle
 
 
 def main(excel):
-    name_to_subject = {}  # 教师名字:[[年级],[科目]]
-    for name in excel.sheetnames:  # 遍历课表人名
-        sheet_work = excel[name]
-        name_to_subject = subject(sheet_work, name_to_subject, name)
+    for name in excel.sheetnames:  # 遍历课表
+        for n1 in range(2, 7):
+            for n2 in range(4, 12):
+                row = convert2title(n1)
+                if excel[name][row + str(n2)].value is not None:
+                    if excel[name][row + str(n2)].value.split("\n")[1] in person_name:
+                        subject_name = excel[name][row + str(n2)].value.split("\n")[0]
 
 
-def subject(sheet, name_to_subject, name):
-    """遍历教师课表每个单元格得到名字与对应的年级及科目"""
-    for n1 in range(2, 7):
-        crow = convert2title(n1)
-        for n2 in range(4, 13):
-            if sheet[crow + str(n2)].value is not None:
-                name_to_subject[name] =
 
 
 def convert2title(n):
@@ -32,8 +29,22 @@ def convert2title(n):
     return title
 
 
+def load_pickle(file):
+    """加载pickle文件"""
+    with open(file=file, mode='rb') as temp:
+        return pickle.load(temp)
+
+
 if __name__ == '__main__':
-    easygui.msgbox("请选择教师课表所在位置")
+    high_class = load_pickle("high_name_to_class.pickle")
+    high_subject = load_pickle("high_name_to_subject.pickle")
+    low_class = load_pickle("low_name_to_class.pickle")
+    low_subject = load_pickle("low_name_to_subject.pickle")
+
+    with open("without.txt", mode='r') as temp:
+        person_name = temp.readline().split('、')
+
+    easygui.msgbox("请选择班级课表所在位置")
     teacher_schedule = easygui.fileopenbox("选择文件路径", default=r"C:\Users\Administrator\Desktop\*.xlsx",
                                            filetypes=["*.xlsx"])
     teacher_schedule_work = openpyxl.load_workbook(teacher_schedule)
