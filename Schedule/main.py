@@ -10,10 +10,29 @@ def main(excel):
             for n2 in range(4, 12):
                 row = convert2title(n1)
                 if excel[name][row + str(n2)].value is not None:
-                    if excel[name][row + str(n2)].value.split("\n")[1] in person_name:
-                        subject_name = excel[name][row + str(n2)].value.split("\n")[0]
+                    if excel[name][row + str(n2)].value.replace('\r', '').split("\n")[1] in person_name:
+                        info = teacher_info.copy()  # 教师信息备份
+                        subject_name = excel[name][row + str(n2)].value.replace('\r', '').split("\n")[0]  # 科目名
+                        grade = name[:3]  # 年级
+                        info = filter_1(subject_name, info)
+                        print(info)
 
 
+def filter_1(subject, info):
+    """删除教师信息中科目不相关人员"""
+    if subject == '校本-英语':
+        subject = '英语'
+    cache = list()
+    for each in info:
+        check = 0
+        for each2 in info[each][1].split('、'):
+            if each2 == subject:
+                check = 1
+        if check == 0:
+            cache.append(each)
+    for each in cache:
+        info.pop(each)
+    return info
 
 
 def convert2title(n):
@@ -35,14 +54,26 @@ def load_pickle(file):
         return pickle.load(temp)
 
 
+def remove_person(info, name):
+    """删除字典中存在的person信息"""
+    for each in name:
+        try:
+            info.pop(each)
+        except KeyError:
+            print(f"{each}不存在老师信息中")
+            choose = input("是否继续执行程序？ y/n")
+            if choose.lower() == "n":
+                raise KeyError
+    return info
+
+
 if __name__ == '__main__':
-    high_class = load_pickle("high_name_to_class.pickle")
-    high_subject = load_pickle("high_name_to_subject.pickle")
-    low_class = load_pickle("low_name_to_class.pickle")
-    low_subject = load_pickle("low_name_to_subject.pickle")
+    teacher_info = load_pickle("teacher_info.pickle")
 
     with open("without.txt", mode='r') as temp:
         person_name = temp.readline().split('、')
+
+    teacher_info = remove_person(teacher_info, person_name)
 
     easygui.msgbox("请选择班级课表所在位置")
     teacher_schedule = easygui.fileopenbox("选择文件路径", default=r"C:\Users\Administrator\Desktop\*.xlsx",
