@@ -5,17 +5,49 @@ import pickle
 
 
 def main(excel):
-    for name in excel.sheetnames:  # 遍历课表
+    for sheet_name in excel.sheetnames:  # 遍历课表
         for n1 in range(2, 7):
             for n2 in range(4, 12):
                 row = convert2title(n1)
-                if excel[name][row + str(n2)].value is not None:
-                    if excel[name][row + str(n2)].value.replace('\r', '').split("\n")[1] in person_name:
+                if excel[sheet_name][row + str(n2)].value is not None:
+                    if excel[sheet_name][row + str(n2)].value.replace('\r', '').split("\n")[1] in person_name:
                         info = teacher_info.copy()  # 教师信息备份
-                        subject_name = excel[name][row + str(n2)].value.replace('\r', '').split("\n")[0]  # 科目名
-                        grade = name[:3]  # 年级
-                        info = filter_1(subject_name, info)
-                        print(info)
+                        subject_name = excel[sheet_name][row + str(n2)].value.replace('\r', '').split("\n")[
+                            0]  # 单元格中科目名
+                        grade = sheet_name[:3]  # 年级
+                        info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
+                        info2 = filter_2(row + str(n2), excel, info1)  # 能上指定课程并且课程不冲突的教师信息
+                        final_info = init_grade(grade, info2)  # 最终的教师名单
+                        #print(f"{info2} {sheet_name} {row + str(n2)}")
+                        #print(f"{final_info} {sheet_name} {row + str(n2)}")
+                        excel[sheet_name][row + str(n2)].value = subject_name + '\n' + final_info[0]
+                        excel.save('test.xlsx]')
+
+def init_grade(object_grade, info):
+    """筛选出最终候选名单"""
+    cache = []
+    for each in info:
+        if object_grade in info[each][0]:
+            cache.append(each)
+    if len(cache) == 0:  # 没有找到对应年级的老师
+        for each in info:
+            if object_grade == "一年级":
+                if "二年级" in info[each][0]:
+                    cache.append(each)
+            elif object_grade == "二年级":
+                if "一年级" in info[each][0]:
+                    cache.append(each)
+            elif object_grade == "七年级":
+                if "八年级" in info[each][0]:
+                    cache.append(each)
+            elif object_grade == "八年级":
+                if "七年级" in info[each][0]:
+                    cache.append(each)
+    if len(cache) == 0:  # 没有相近年级的教师
+        for each in info:
+            cache.append(each)
+
+    return cache
 
 
 def filter_1(subject, info):
@@ -35,6 +67,14 @@ def filter_1(subject, info):
     return info
 
 
+def filter_2(cell, excel, info):
+    """便利每个单元格的对应单元格筛选出闲置教师"""
+    for sheet_name in excel.sheetnames:
+        if excel[sheet_name][cell].value.replace('\r', '').split("\n")[1] in info:
+            info.pop(excel[sheet_name][cell].value.replace('\r', '').split("\n")[1])
+    return info
+
+
 def convert2title(n):
     """将数字转换成EXCEL对应的字母列"""
     title = ""
@@ -50,8 +90,8 @@ def convert2title(n):
 
 def load_pickle(file):
     """加载pickle文件"""
-    with open(file=file, mode='rb') as temp:
-        return pickle.load(temp)
+    with open(file=file, mode='rb') as cache:
+        return pickle.load(cache)
 
 
 def remove_person(info, name):
