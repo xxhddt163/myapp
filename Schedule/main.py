@@ -5,52 +5,74 @@ from openpyxl.comments import Comment
 from openpyxl import styles
 import random
 
-"""
-日志功能
-罗列候选名单功能
-"""
-
 
 def main(excel):
-    excel.create_sheet("log")  # 创建一个工作表储存日志
+    excel.create_sheet("统计总表")  # 创建一个工作表储存日志
     num = 1
     for sheet_name in excel.sheetnames:  # 遍历课表
         for n1 in range(2, 7):
             for n2 in range(4, 12):
                 row = convert2title(n1)  # 数字转换为对应的列
-                if excel[sheet_name][row + str(n2)].value is not None:
-                    teacher_name = excel[sheet_name][row + str(n2)].value.replace('\r', '').split("\n")[1]  # 单元格中教师名
+                cell = row + str(n2)  # 单元格具体坐标
+                if excel[sheet_name][cell].value is not None:
+                    teacher_name = excel[sheet_name][cell].value.replace('\r', '').split("\n")[1]  # 单元格中教师名
                     if teacher_name in person_name:
                         info = teacher_info.copy()  # 教师信息备份
-                        subject_name = excel[sheet_name][row + str(n2)].value.replace('\r', '').split("\n")[
+
+                        subject_name = excel[sheet_name][cell].value.replace('\r', '').split("\n")[
                             0]  # 单元格中科目名
                         grade = sheet_name[:3]  # 年级
                         class_info = sheet_name[4]  # 班级
                         info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
-                        info2 = filter_2(row + str(n2), excel, info1)  # 能上指定课程并且课程不冲突的教师信息
+                        info2 = filter_2(cell, excel, info1)  # 能上指定课程并且课程不冲突的教师信息
                         if len(info2) != 0:
                             final_info = init_grade(grade, info2)  # 最终的教师名单
                             final_name = random_name(final_info)  # 代课老师
-                            comment(excel[sheet_name][row + str(n2)],
+                            comment(excel[sheet_name][cell],
                                     teacher_name, final_name)
-                            excel[sheet_name][row + str(n2)].value = subject_name + '\n' + final_name
-                            cell_format(excel[sheet_name][row + str(n2)])
-                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2), grade, class_info,
-                                final_info[0])
+                            excel[sheet_name][cell].value = subject_name + '\n' + final_name
+                            cell_format(excel[sheet_name][cell])
+                            log(num, excel, teacher_name, subject_name, sheet_name, cell, final_info[0])
                             num += 1
                         else:
-                            excel[sheet_name][row + str(n2)].value = subject_name + '\n' + "无候选教师"
-                            cell_format1(excel[sheet_name][row + str(n2)])
-                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2), class_info, grade)
+                            excel[sheet_name][cell].value = subject_name + '\n' + "无候选教师"
+                            cell_format1(excel[sheet_name][cell])
+                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2))
+                            referrals(teacher_info, grade, excel, cell, num)
                             num += 1
-    excel.save('test.xlsx')
+    save_file()
 
 
-def log(num, excel, old_name, subject, sheet, cell, grade, class_info, new_name="无"):
+def save_file():
+    """保存文件"""
+    easygui.msgbox("课表统计完成")
+    teacher_schedule_work.save("test.xlsx")
+
+
+def referrals(info, grade, excel, cell, num):
+    """无代课老师时添加推荐人员"""
+    cache = []
+    for each in info:
+        if grade in info[each][0]:
+            cache.append(each)
+    for sheet_name in excel.sheetnames:
+        if excel[sheet_name][cell].value is not None:
+            if excel[sheet_name][cell].value.replace('\r', '').split("\n")[1] in cache:
+                cache.remove(excel[sheet_name][cell].value.replace('\r', '').split("\n")[1])
+    if len(cache) != 0:
+        output = ""
+        for n in cache:
+            output += f"班级：{teacher_info[n][0]} 姓名：{n} 科目：{teacher_info[n][1]}\n"
+            comm = Comment(output, "")
+            comm.width, comm.height = 480, 500
+            excel["统计总表"]["A" + str(num)].comment = comm
+
+
+def log(num, excel, old_name, subject, sheet, cell, new_name="无"):
     """日志"""
-    excel["log"]["A" + str(num)].hyperlink = f"test.xlsx#'{sheet}'!{cell}"  # 超链接
-    excel["log"]["A" + str(num)].value = f"班级：{grade}{class_info}班 科目：{subject} 任课老师：{old_name} 代课老师：{new_name}"
-    excel["log"].merge_cells(f"A{num}:G{num}")
+    excel["统计总表"].merge_cells(f"A{num}:H{num}")
+    excel["统计总表"]["A" + str(num)].hyperlink = f"test.xlsx#'{sheet}'!{cell}"  # 超链接
+    excel["统计总表"]["A" + str(num)].value = f"班级：{sheet}    科目：{subject}    任课老师：{old_name}    代课老师：{new_name}"
 
 
 def random_name(teacher_name):
@@ -62,7 +84,7 @@ def random_name(teacher_name):
 def comment(cell, old_teacher, new_teacher):
     """修改过的表格自动填入批注"""
     cache = Comment(f"初始教师：{old_teacher}\n代课教师：{new_teacher}", "")
-    cache.width, cache.height = 120, 120
+    cache.width, cache.height = 120, 40
     cell.comment = cache
 
 
@@ -164,7 +186,7 @@ def remove_person(info, name):
 if __name__ == '__main__':
     teacher_info = load_pickle("teacher_info.pickle")
 
-    with open("without.txt", mode='r') as temp:
+    with open("请假人员.txt", mode='r') as temp:
         person_name = temp.readline().split('、')
 
     teacher_info = remove_person(teacher_info, person_name)
