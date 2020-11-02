@@ -12,6 +12,7 @@ import random
 
 
 def main(excel):
+    excel.create_sheet("log")  # 创建一个工作表储存日志
     for sheet_name in excel.sheetnames:  # 遍历课表
         for n1 in range(2, 7):
             for n2 in range(4, 12):
@@ -38,6 +39,8 @@ def main(excel):
                             # print(f"{info2} {sheet_name} {row + str(n2)}")
                             excel[sheet_name][row + str(n2)].value = subject_name + '\n' + "无候选教师"
                             cell_format1(excel[sheet_name][row + str(n2)])
+    excel["一年级(1)班"]["G2"].hyperlink = "test.xlsx#'一年级(2)班'!A1"     # 超链接
+    excel["一年级(1)班"]["G2"].value = "asda"
     excel.save('test.xlsx')
 
 
@@ -61,7 +64,7 @@ def comment(cell, old_teacher, new_teacher):
 
 def cell_format(cell):
     """修改单元格字体颜色"""
-    cell.font = styles.Font(color='0099CC00')  # 不正常上班考勤填充绿色
+    cell.font = styles.Font(color='0099CC00')  # 有代课教师填充绿色
 
 
 def cell_format1(cell):
