@@ -13,6 +13,7 @@ import random
 
 def main(excel):
     excel.create_sheet("log")  # 创建一个工作表储存日志
+    num = 1
     for sheet_name in excel.sheetnames:  # 遍历课表
         for n1 in range(2, 7):
             for n2 in range(4, 12):
@@ -24,29 +25,32 @@ def main(excel):
                         subject_name = excel[sheet_name][row + str(n2)].value.replace('\r', '').split("\n")[
                             0]  # 单元格中科目名
                         grade = sheet_name[:3]  # 年级
+                        class_info = sheet_name[4]  # 班级
                         info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
                         info2 = filter_2(row + str(n2), excel, info1)  # 能上指定课程并且课程不冲突的教师信息
                         if len(info2) != 0:
                             final_info = init_grade(grade, info2)  # 最终的教师名单
-                            # print(f"{info2} {sheet_name} {row + str(n2)}")
-                            # print(f"{final_info} {sheet_name} {row + str(n2)}")
                             final_name = random_name(final_info)  # 代课老师
                             comment(excel[sheet_name][row + str(n2)],
                                     teacher_name, final_name)
                             excel[sheet_name][row + str(n2)].value = subject_name + '\n' + final_name
                             cell_format(excel[sheet_name][row + str(n2)])
+                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2), grade, class_info,
+                                final_info[0])
+                            num += 1
                         else:
-                            # print(f"{info2} {sheet_name} {row + str(n2)}")
                             excel[sheet_name][row + str(n2)].value = subject_name + '\n' + "无候选教师"
                             cell_format1(excel[sheet_name][row + str(n2)])
-    excel["一年级(1)班"]["G2"].hyperlink = "test.xlsx#'一年级(2)班'!A1"     # 超链接
-    excel["一年级(1)班"]["G2"].value = "asda"
+                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2), class_info, grade)
+                            num += 1
     excel.save('test.xlsx')
 
 
-def log():
+def log(num, excel, old_name, subject, sheet, cell, grade, class_info, new_name="无"):
     """日志"""
-    pass
+    excel["log"]["A" + str(num)].hyperlink = f"test.xlsx#'{sheet}'!{cell}"  # 超链接
+    excel["log"]["A" + str(num)].value = f"班级：{grade}{class_info}班 科目：{subject} 任课老师：{old_name} 代课老师：{new_name}"
+    excel["log"].merge_cells(f"A{num}:G{num}")
 
 
 def random_name(teacher_name):
