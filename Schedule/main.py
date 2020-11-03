@@ -4,6 +4,8 @@ import pickle
 from openpyxl.comments import Comment
 from openpyxl import styles
 import random
+from os.path import basename
+from myapp.Schedule.remark import Remark
 
 
 def main(excel):
@@ -22,7 +24,6 @@ def main(excel):
                         subject_name = excel[sheet_name][cell].value.replace('\r', '').split("\n")[
                             0]  # 单元格中科目名
                         grade = sheet_name[:3]  # 年级
-                        class_info = sheet_name[4]  # 班级
                         info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
                         info2 = filter_2(cell, excel, info1)  # 能上指定课程并且课程不冲突的教师信息
                         if len(info2) != 0:
@@ -40,13 +41,7 @@ def main(excel):
                             log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2))
                             referrals(teacher_info, grade, excel, cell, num)
                             num += 1
-    save_file()
-
-
-def save_file():
-    """保存文件"""
-    easygui.msgbox("课表统计完成")
-    teacher_schedule_work.save("test.xlsx")
+    excel.save(file_save)
 
 
 def referrals(info, grade, excel, cell, num):
@@ -71,8 +66,9 @@ def referrals(info, grade, excel, cell, num):
 def log(num, excel, old_name, subject, sheet, cell, new_name="无"):
     """日志"""
     excel["统计总表"].merge_cells(f"A{num}:H{num}")
-    excel["统计总表"]["A" + str(num)].hyperlink = f"test.xlsx#'{sheet}'!{cell}"  # 超链接
-    excel["统计总表"]["A" + str(num)].value = f"班级：{sheet}    科目：{subject}    任课老师：{old_name}    代课老师：{new_name}"
+    excel["统计总表"]["A" + str(num)].hyperlink = f"{basename(file_save)}#'{sheet}'!{cell}"  # 超链接
+    excel["统计总表"][
+        "A" + str(num)].value = f"班级：{sheet}    科目：{subject}    任课老师：{old_name}    代课老师：{new_name}"
 
 
 def random_name(teacher_name):
@@ -184,15 +180,23 @@ def remove_person(info, name):
 
 
 if __name__ == '__main__':
-    teacher_info = load_pickle("teacher_info.pickle")
+    way = easygui.choicebox("选择功能", "选择功能", ["①课表自动修改", "②根据总表改内容"])
+    if way == "①课表自动修改":
+        teacher_info = load_pickle("teacher_info.pickle")
 
-    with open("请假人员.txt", mode='r') as temp:
-        person_name = temp.readline().split('、')
+        with open("请假人员.txt", mode='r') as temp:
+            person_name = temp.readline().split('、')
 
-    teacher_info = remove_person(teacher_info, person_name)
+        teacher_info = remove_person(teacher_info, person_name)
 
-    easygui.msgbox("请选择班级课表所在位置")
-    teacher_schedule = easygui.fileopenbox("选择文件路径", default=r"C:\Users\Administrator\Desktop\*.xlsx",
-                                           filetypes=["*.xlsx"])
-    teacher_schedule_work = openpyxl.load_workbook(teacher_schedule)
-    main(teacher_schedule_work)
+        easygui.msgbox("请选择班级课表所在位置")
+        teacher_schedule = easygui.fileopenbox("选择文件路径", default=r"C:\Users\Administrator\Desktop\*.xlsx",
+                                               filetypes=["*.xlsx"])
+        easygui.msgbox("请选择汇总文件保存位置")
+        file_save = easygui.filesavebox(default=r"C:\Users\Administrator\Desktop\*.xlsx",
+                                        filetypes=["*.xlsx"])
+
+        teacher_schedule_work = openpyxl.load_workbook(teacher_schedule)
+        main(teacher_schedule_work)
+    elif way == "②根据总表改内容":
+        r = Remark()
