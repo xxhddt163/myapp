@@ -57,9 +57,9 @@ def referrals(info, grade, excel, cell, num):
     if len(cache) != 0:
         output = ""
         for n in cache:
-            output += f"班级：{teacher_info[n][0]} 姓名：{n} 科目：{teacher_info[n][1]}\n"
+            output += f"班级：{teacher_info[n][0]}  {teacher_info[n][2]}   姓名：{n} 科目：{teacher_info[n][1]}\n"
             comm = Comment(output, "")
-            comm.width, comm.height = 480, 500
+            comm.width, comm.height = 600, 500
             excel["统计总表"]["A" + str(num)].comment = comm
 
 
@@ -68,7 +68,7 @@ def log(num, excel, old_name, subject, sheet, cell, new_name="无"):
     excel["统计总表"].merge_cells(f"A{num}:H{num}")
     excel["统计总表"]["A" + str(num)].hyperlink = f"{basename(file_save)}#'{sheet}'!{cell}"  # 超链接
     excel["统计总表"][
-        "A" + str(num)].value = f"班级：{sheet}    科目：{subject}    任课老师：{old_name}    代课老师：{new_name}"
+        "A" + str(num)].value = f"班级：{sheet}    科目：{subject}    任课老师：{old_name}    代课老师：{new_name} "
 
 
 def random_name(teacher_name):

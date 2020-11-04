@@ -26,7 +26,7 @@ for sheet_name in sheet.sheetnames:
         class_number = sheet[sheet_name]["A" + str(line_start)].value[2]  # 班级
         low_start = 2
         while sheet[sheet_name][convert2title(low_start) + str(line_start)].value is not None:
-            name = sheet[sheet_name][convert2title(low_start) + str(line_start)].value
+            name = sheet[sheet_name][convert2title(low_start) + str(line_start)].value.strip()
             if teacher.get(name) is not None:
                 if str(class_number) + "班" not in teacher[name]:
                     teacher[name] = teacher[name] + "、" + str(class_number) + "班"
