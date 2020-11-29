@@ -13,7 +13,7 @@ QQ:
 
 微信：
 1："微信安装向导" uia
-2：title="安装微信"
+2：title = "安装微信"
 3: title = "开始使用"
 """
 
@@ -28,8 +28,8 @@ class Setup:
                             "C:\Program Files (x86)\Tencent\QQ",
                             "立即安装",
                             "完成安装"],
-                     "微信": ["安装微信",
-                            "开始使用"]}
+                     "Wechat": ["安装微信",
+                                "开始使用"]}
         self.app = Application(backend='win32').start(r"C:\Users\admin\Desktop\soft\QQ.exe")
         self.main_window = ''
         self.main()
