@@ -5,35 +5,51 @@ from pywinauto import Application
 import easygui
 
 
-def new_window_ready(backend, path, title):
-    """安装程序后检测并连接新的窗口"""
+def new_window_ready_path(backend, path, title):
+    """通过路径连接新的窗口"""
     while True:
-        application = Application(backend=backend).connect(path=path)
-        if application.window(title=title).wait("ready", timeout=300):
-            return application
+        try:
+            application = Application(backend=backend).connect(path=path)
+        except:
+            continue
+        application.window(title=title).wait("ready", timeout=300)
+        return application
+
+
+def new_window_ready_title(title1, title2):
+    """通过title名判断新的窗口是否连接成功"""
+    while True:
+        try:
+            application = Application().connect(title=title1)
+            if application.top_window().child_window(title=title2).exists():
+                return application
+            else:
+                continue
+        except:
+            continue
 
 
 if __name__ == '__main__':
     step_menu = {"QQ": [["自定义选项", "Button"],  # 第四步：程序执行过程
                         ["添加到快速启动栏", "Button"],
                         ["开机自动启动", "Button"],
-                        [r"C:\Program Files (x86)\Tencent\QQ", "Edit"],
+                        ["程序安装目录Edit", ""],
                         ["立即安装", "Button"],
                         ["完成安装", "Button"]],
                  "Wechat": [["更多选项", "Button"],
                             ["程序安装目录", "Edit"],
                             ["安装微信", "Button"],
                             ["开始使用", "Button"]],
-                 "Winrar": [[r"C:\Program Files\WinRAR", "Edit"],
+                 "Winrar": [["目标文件夹(&D)Edit", ""],
                             ["安装", "Button"]],
                  "VCRedist": [["确定", "Button"]],
                  "NF3": [["确定", "Button"]],
-                 "OFFICE2013": [[r"C:\Program Files\Microsoft Office", "RichEdit20W"]],
+                 "OFFICE2013": [["Edit8", ""]],
                  "CAD2007": [["确定", "Button"]],
                  "360drv": [["已经阅读并同意", "Button"],
-                            ["立即安装", "Button"], ],
+                            ["立即安装", "Button"]],
                  "TXvideo": [["自定义安装Button", ""],
-                             [r"C:\Program Files (x86)\Tencent\QQLive", "Edit"],
+                             ["安装位置：Edit", ""],
                              ["立即安装", "Button"],
                              ["立即体验", "Button"]]
                  }
@@ -90,7 +106,7 @@ if __name__ == '__main__':
         for i in range(step_len):
             class_name = step_menu[each][i][1]
             title_name = step_menu[each][i][0]
-            if "Edit" in class_name:
+            if "Edit" in class_name or "Edit" in title_name:
                 p.check_window(title_name, class_name)
                 p.main_edit()
             elif class_name == "Button" or class_name == "":
@@ -103,24 +119,24 @@ if __name__ == '__main__':
             time.sleep(3)
             os.system('taskkill /IM WeChat.exe /F')  # 关闭自动打开的微信程序
         if each == "Winrar":
-            app = new_window_ready("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
+            app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
             window.child_window(title="确定", class_name="Button").click()
-            app = new_window_ready("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
+            app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
             window.child_window(title="完成", class_name="Button").click_input()
         if each == "VCRedist":
-            app = new_window_ready("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
             window = app["信息"]
             window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
         if each == "NF3":
-            app = new_window_ready("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
             window = app["信息"]
             window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
         if each == "OFFICE2013":
@@ -135,28 +151,20 @@ if __name__ == '__main__':
                     break
             office_crack = os.getcwd() + "\\" + "OFFICE2013" + "\\" + "office13.bat"
             os.system(office_crack)
+
         if each == "CAD2007":
-            time.sleep(3)
-            while True:
-                app = Application().connect(title="AutoCAD 2007 安装")
-                if app.top_window().child_window(title="下一步(&N)>", class_name="Button").exists():
-                    break
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
+            time.sleep(2)
+            app = new_window_ready_title("AutoCAD 2007 安装", "下一步(&N)>")
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="我接受(&A)", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="我接受(&A)", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="序列号(&S)", class_name="Static").wait("ready", timeout=300)
             app.top_window().type_keys("%s")
             app.top_window().type_keys("00000000000")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="用户信息", class_name="Static").wait("ready", timeout=300)
             app.top_window().type_keys("%f")
             app.top_window().type_keys("asd")
             app.top_window().type_keys("%l")
@@ -167,39 +175,23 @@ if __name__ == '__main__':
             app.top_window().type_keys("asd")
             app.top_window().type_keys("%p")
             app.top_window().type_keys("asd")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="选择安装类型", class_name="Static").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="C:\\Program Files (x86)\\AutoCAD 2007\\", class_name="Edit").set_text(
                 r"D:\Program Files\CAD2007")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="选择用于编辑文本文件的默认文字编辑器(&E):", class_name="Static").wait("ready",
-                                                                                                     timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="开始安装", class_name="Static").wait("ready", timeout=300)
             app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(30)
-            while True:
-                app = Application().connect(title="AutoCAD 2007 安装程序")
-                if app.top_window().child_window(title="完成(&F)", class_name="Button").exists():
-                    break
-                else:
-                    time.sleep(5)
-            time.sleep(3)
-            app.top_window().child_window(title="完成(&F)", class_name="Button").wait("ready", timeout=100)
+            time.sleep(15)
+            app = new_window_ready_title("AutoCAD 2007 安装程序", "完成(&F)")
             app.top_window().child_window(title="是，我想现在阅读自述文件的内容(&Y)", class_name="Button").click_input()
             time.sleep(1)
-            app.top_window().child_window(title="完成(&F)", class_name="Button").wait("ready", timeout=100)
             app.top_window().child_window(title="完成(&F)", class_name="Button").click_input()
             time.sleep(1)
             crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "adlmdll.dll"
@@ -207,6 +199,7 @@ if __name__ == '__main__':
             time.sleep(.5)
             crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "lacadp.dll"
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\lacadp.dll" /Y')
+
         if each == "360drv":
             time.sleep(3)
             os.system('taskkill /IM 360DrvMgr.exe /F')
