@@ -30,6 +30,12 @@ if __name__ == '__main__':
                  "NF3": [["确定", "Button"]],
                  "OFFICE2013": [[r"C:\Program Files\Microsoft Office", "RichEdit20W"]],
                  "CAD2007": [["确定", "Button"]],
+                 "360drv": [["已经阅读并同意", "Button"],
+                            ["立即安装", "Button"], ],
+                 "TXvideo": [["自定义安装Button", ""],
+                             [r"C:\Program Files (x86)\Tencent\QQLive", "Edit"],
+                             ["立即安装", "Button"],
+                             ["立即体验", "Button"]]
                  }
 
     type_menu = {"QQ": "win32",  # 第三步：程序类型
@@ -38,7 +44,10 @@ if __name__ == '__main__':
                  "VCRedist": "win32",
                  "NF3": "win32",
                  "OFFICE2013": "win32",
-                 "CAD2007": "win32"}
+                 "CAD2007": "win32",
+                 "360drv": "win32",
+                 "Chrome": "win32",
+                 "TXvideo": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -46,11 +55,25 @@ if __name__ == '__main__':
                         "VCRedist": "VC++运行库 一键安装 - IT天空出品",
                         "NF3": ".Net框架 3.5 一键安装 - IT天空出品",
                         "OFFICE2013": "Microsoft Office Professional Plus 2013",
-                        "CAD2007": "Autodesk 安装程序"}
+                        "CAD2007": "Autodesk 安装程序",
+                        "360drv": "欢迎使用 360驱动大师",
+                        "Chrome": "",
+                        "TXvideo": "腾讯视频 2020 安装程序 "}
 
     setup_menu = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
-                                       choices=["QQ", "Wechat", "Winrar", "VCRedist", "NF3", "OFFICE2013", "CAD2007"])
+                                       choices=["QQ", "Wechat", "Winrar", "VCRedist", "NF3", "OFFICE2013", "CAD2007",
+                                                "360drv", "Chrome", "TXvideo"])
     for each in setup_menu:
+        if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
+            temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
+            time.sleep(5)
+            while True:
+                time.sleep(5)
+                if not temp.is_process_running():
+                    break
+            os.system('taskkill /IM chrome.exe /F')
+            continue
+
         p = Program(os.getcwd(), each, type_menu[each], main_window_name[each])
 
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
@@ -70,7 +93,7 @@ if __name__ == '__main__':
             if "Edit" in class_name:
                 p.check_window(title_name, class_name)
                 p.main_edit()
-            elif class_name == "Button":
+            elif class_name == "Button" or class_name == "":
                 p.check_window(title_name, class_name)
                 p.button_click()
         if each == "QQ":
@@ -110,6 +133,8 @@ if __name__ == '__main__':
                     time.sleep(10)
                 except RuntimeError:
                     break
+            office_crack = os.getcwd() + "\\" + "OFFICE2013" + "\\" + "office13.bat"
+            os.system(office_crack)
         if each == "CAD2007":
             time.sleep(3)
             while True:
@@ -182,3 +207,9 @@ if __name__ == '__main__':
             time.sleep(.5)
             crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "lacadp.dll"
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\lacadp.dll" /Y')
+        if each == "360drv":
+            time.sleep(3)
+            os.system('taskkill /IM 360DrvMgr.exe /F')
+        if each == "TXvideo":
+            time.sleep(3)
+            os.system('taskkill /IM QQLive.exe /F')
