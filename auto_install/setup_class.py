@@ -22,10 +22,10 @@ class Program:
         if obj_class != "":
             if self.program_type == "win32":  # win32类型的程序检测
                 if self.main.window(title_re=obj_name, class_name=obj_class).wait("ready", timeout=300):
-                    self.main = self.app[self.main_window].child_window(title=obj_name, class_name=obj_class)
+                    self.main = self.app[self.main_window].child_window(title_re=obj_name, class_name=obj_class)
             elif self.program_type == "uia":  # uia类型
                 if self.main.window(title_re=obj_name, control_type=obj_class).wait("ready", timeout=300):
-                    self.main = self.app[self.main_window].child_window(title=obj_name, control_type=obj_class)
+                    self.main = self.app[self.main_window].child_window(title_re=obj_name, control_type=obj_class)
         elif obj_class == "":
             if self.main[obj_name].wait("ready", timeout=300):
                 self.main = self.app[self.main_window][obj_name]

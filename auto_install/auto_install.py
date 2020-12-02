@@ -51,7 +51,14 @@ if __name__ == '__main__':
                  "TXvideo": [["自定义安装Button", ""],
                              ["安装位置：Edit", ""],
                              ["立即安装", "Button"],
-                             ["立即体验", "Button"]]
+                             ["立即体验", "Button"]],
+                 "IQIYI": [["阅读并同意", "Button"],
+                           ["Edit", ""],
+                           ["立即安装", "Button"],
+                           ["CheckBox", ""],
+                           ["CheckBox2", ""],
+                           ['CheckBox3', ""],
+                           ["立即体验", "Button"]]
                  }
 
     type_menu = {"QQ": "win32",  # 第三步：程序类型
@@ -63,7 +70,8 @@ if __name__ == '__main__':
                  "CAD2007": "win32",
                  "360drv": "win32",
                  "Chrome": "win32",
-                 "TXvideo": "win32"}
+                 "TXvideo": "win32",
+                 "IQIYI": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -74,11 +82,12 @@ if __name__ == '__main__':
                         "CAD2007": "Autodesk 安装程序",
                         "360drv": "欢迎使用 360驱动大师",
                         "Chrome": "",
-                        "TXvideo": "腾讯视频 2020 安装程序 "}
+                        "TXvideo": "腾讯视频 2020 安装程序 ",
+                        "IQIYI": "执行的操作 安装向导"}
 
     setup_menu = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
                                        choices=["QQ", "Wechat", "Winrar", "VCRedist", "NF3", "OFFICE2013", "CAD2007",
-                                                "360drv", "Chrome", "TXvideo"])
+                                                "360drv", "Chrome", "TXvideo", "IQIYI"])
     for each in setup_menu:
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
             temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
@@ -206,3 +215,6 @@ if __name__ == '__main__':
         if each == "TXvideo":
             time.sleep(3)
             os.system('taskkill /IM QQLive.exe /F')
+        if each == "IQIYI":
+            time.sleep(3)
+            os.system('taskkill /IM QyClient.exe /F')
