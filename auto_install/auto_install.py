@@ -1,8 +1,18 @@
+from datetime import datetime
 from setup_class import Program
 import os
 import time
 from pywinauto import Application
 import easygui
+
+start_time = (time.strftime("%H:%M", time.localtime()))
+
+
+def running_time(start, end):
+    """计算程序运行多少时间"""
+    start = datetime.strptime(start, "%H:%M")  # 将字符串格式的开始时间实例化为datetime对象
+    end = datetime.strptime(end, "%H:%M")
+    return int((end - start).seconds / 60)  # 计算结束时间与开始时间之间相差多少秒并将秒换算成分钟
 
 
 def new_window_ready_path(backend, path, title):
@@ -39,6 +49,23 @@ def control_check(application, control, edit_info=""):
     elif "Edit" in control:
         application.top_window()[control].wait("ready", timeout=10)
         application.top_window()[control].set_text(edit_info)
+
+
+def menu_format(choice_list):
+    """将中文选单格式为英文名"""
+
+    menu_dir = {"微信": "Wechat",
+                "Net Farmework3": "NF3",
+                "360驱动大师": "360drv",
+                "谷歌浏览器": "Chrome",
+                "腾讯视频": "TXvideo",
+                "爱奇艺": "IQIYI"}
+
+    menu_temp = choice_list.copy()
+    for item in choice_list:
+        if item in menu_dir:
+            menu_temp[menu_temp.index(item)] = menu_dir[item]
+    return menu_temp
 
 
 if __name__ == '__main__':
@@ -98,10 +125,11 @@ if __name__ == '__main__':
                         "TXvideo": "腾讯视频 2020 安装程序 ",
                         "IQIYI": "执行的操作 安装向导"}
 
-    setup_menu = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
-                                       choices=["QQ", "Wechat", "Winrar", "VCRedist", "NF3", "OFFICE2013", "CAD2007",
-                                                "360drv", "Chrome", "TXvideo", "IQIYI"])
-    for each in setup_menu:
+    choice = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
+                                   choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "OFFICE2013", "CAD2007",
+                                            "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺"])
+    menu = menu_format(choice)
+    for each in menu:
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
             temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
             time.sleep(5)
@@ -181,9 +209,9 @@ if __name__ == '__main__':
                 time.sleep(1)
 
             control_check(application=app, control='Edit1', edit_info="000")
-            time.sleep(1)
+            time.sleep(0.5)
             control_check(application=app, control='Edit2', edit_info="00000000")
-            time.sleep(1)
+            time.sleep(0.5)
             control_check(application=app, control='Button1')
 
             for i in range(1, 6):
@@ -216,3 +244,7 @@ if __name__ == '__main__':
         if each == "IQIYI":
             time.sleep(3)
             os.system('taskkill /IM QyClient.exe /F')
+
+    end_time = (time.strftime("%H:%M", time.localtime()))
+    easygui.msgbox(
+        f"程序安装完毕，耗时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个程序，分别是{','.join(choice)}")
