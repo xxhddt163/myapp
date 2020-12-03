@@ -29,6 +29,18 @@ def new_window_ready_title(title1, title2):
             continue
 
 
+def control_check(application, control, edit_info=""):
+    """根据控件类型自动编辑内容或者点击按钮
+    按钮：自动点击
+    编辑框：填写内容"""
+    if "Button" in control or "CheckBox" in control:
+        application.top_window()[control].wait("ready", timeout=10)
+        application.top_window()[control].click_input()
+    elif "Edit" in control:
+        application.top_window()[control].wait("ready", timeout=10)
+        application.top_window()[control].set_text(edit_info)
+
+
 if __name__ == '__main__':
     step_menu = {"QQ": [["自定义选项", "Button"],  # 第四步：程序执行过程
                         ["添加到快速启动栏", "Button"],
@@ -57,7 +69,8 @@ if __name__ == '__main__':
                            ["立即安装", "Button"],
                            ["CheckBox", ""],
                            ["CheckBox2", ""],
-                           ['CheckBox3', ""],
+                           ["CheckBox3", ""],
+                           ["CheckBox4", ""],
                            ["立即体验", "Button"]]
                  }
 
@@ -162,50 +175,35 @@ if __name__ == '__main__':
             os.system(office_crack)
 
         if each == "CAD2007":
-            time.sleep(2)
             app = new_window_ready_title("AutoCAD 2007 安装", "下一步(&N)>")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
+            for i in ['Button2', 'RadioButton2', 'Button0']:
+                control_check(application=app, control=i)
+                time.sleep(1)
+
+            control_check(application=app, control='Edit1', edit_info="000")
             time.sleep(1)
-            app.top_window().child_window(title="我接受(&A)", class_name="Button").click_input()
+            control_check(application=app, control='Edit2', edit_info="00000000")
             time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().type_keys("%s")
-            app.top_window().type_keys("00000000000")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().type_keys("%f")
-            app.top_window().type_keys("asd")
-            app.top_window().type_keys("%l")
-            app.top_window().type_keys("asd")
-            app.top_window().type_keys("%o")
-            app.top_window().type_keys("asd")
-            app.top_window().type_keys("%d")
-            app.top_window().type_keys("asd")
-            app.top_window().type_keys("%p")
-            app.top_window().type_keys("asd")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="C:\\Program Files (x86)\\AutoCAD 2007\\", class_name="Edit").set_text(
-                r"D:\Program Files\CAD2007")
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="下一步(&N)>", class_name="Button").click_input()
-            time.sleep(15)
+            control_check(application=app, control='Button1')
+
+            for i in range(1, 6):
+                control_check(application=app, control="Edit" + str(i), edit_info="asd")
+                time.sleep(0.5)
+
+            for i in ['Button1', 'Button1', 'Button1']:
+                control_check(application=app, control=i)
+                time.sleep(1)
+
+            control_check(application=app, control='Edit', edit_info=r"D:\Program Files\CAD2007")
+            for i in ['Button1', 'Button1', 'Button1']:
+                control_check(application=app, control=i)
+                time.sleep(1)
             app = new_window_ready_title("AutoCAD 2007 安装程序", "完成(&F)")
-            app.top_window().child_window(title="是，我想现在阅读自述文件的内容(&Y)", class_name="Button").click_input()
-            time.sleep(1)
-            app.top_window().child_window(title="完成(&F)", class_name="Button").click_input()
-            time.sleep(1)
+            for i in ['CheckBox', 'Button1']:
+                control_check(application=app, control=i)
             crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "adlmdll.dll"
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\adlmdll.dll" /Y')
-            time.sleep(.5)
+            time.sleep(1)
             crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "lacadp.dll"
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\lacadp.dll" /Y')
 
