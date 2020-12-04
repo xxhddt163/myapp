@@ -4,6 +4,8 @@ import os
 import time
 from pywinauto import Application
 import easygui
+import offce_select
+import pyautogui
 
 start_time = (time.strftime("%H:%M", time.localtime()))
 
@@ -63,7 +65,7 @@ def menu_format(choice_list):
                 "DirectX9": "DX"}
 
     menu_temp = choice_list.copy()
-    for item in choice_list:
+    for item in menu_temp:
         if item in menu_dir:
             menu_temp[menu_temp.index(item)] = menu_dir[item]
     return menu_temp
@@ -114,7 +116,8 @@ if __name__ == '__main__':
                  "Chrome": "win32",
                  "TXvideo": "win32",
                  "IQIYI": "win32",
-                 "DX": "win32"}
+                 "DX": "win32",
+                 "PS CS3": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -127,13 +130,36 @@ if __name__ == '__main__':
                         "Chrome": "",
                         "TXvideo": "腾讯视频 2020 安装程序 ",
                         "IQIYI": "执行的操作 安装向导",
-                        "DX": "DirectX 9.0c 一键安装 - IT天空出品"}
+                        "DX": "DirectX 9.0c 一键安装 - IT天空出品",
+                        "PS CS3": "安装 - Adobe Photoshop CS3 Extended"}
 
     choice = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
                                    choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9",
-                                            "OFFICE2013", "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺"])
+                                            "OFFICE2013", "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3"])
     menu = menu_format(choice)
     for each in menu:
+
+        if each == "PS CS3":
+            temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
+            time.sleep(2)
+            pyautogui.hotkey('alt', 'n')
+            pyautogui.press('home')
+            pyautogui.press('delete')
+            pyautogui.press('d')
+            pyautogui.press('\n')
+            pyautogui.press('\n')
+            pyautogui.hotkey('alt', 'n')
+            time.sleep(.5)
+            pyautogui.hotkey('alt', 'n')
+            time.sleep(.5)
+            pyautogui.hotkey('alt', 'i')
+            while True:
+                time.sleep(8)
+                pyautogui.hotkey('alt', 'f')
+                if not temp.is_process_running():
+                    break
+            continue
+
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
             temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
             time.sleep(5)
@@ -154,6 +180,8 @@ if __name__ == '__main__':
                 p.app.top_window().wait("ready", timeout=300)
                 p.app.top_window().type_keys("%u")
                 p.app.top_window().wait("ready", timeout=300)
+                p.app.top_window().set_focus()
+                offce_select.choose_menu()
                 p.app.top_window().type_keys("%f")
 
         step_len = len(step_menu[each])
@@ -258,4 +286,4 @@ if __name__ == '__main__':
 
     end_time = (time.strftime("%H:%M", time.localtime()))
     easygui.msgbox(
-        f"程序安装完毕，耗时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，分别是{','.join(choice)}")
+        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，{','.join(choice)}")
