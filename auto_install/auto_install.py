@@ -259,12 +259,12 @@ if __name__ == '__main__':
 
             for i in ['Button1', 'Button1', 'Button1']:
                 control_check(application=app, control=i)
-                time.sleep(1)
+                time.sleep(2)
 
             control_check(application=app, control='Edit', edit_info=r"D:\Program Files\CAD2007")
             for i in ['Button1', 'Button1', 'Button1']:
                 control_check(application=app, control=i)
-                time.sleep(1)
+                time.sleep(3)
             app = new_window_ready_title("AutoCAD 2007 安装程序", "完成(&F)")
             for i in ['CheckBox', 'Button1']:
                 control_check(application=app, control=i)
