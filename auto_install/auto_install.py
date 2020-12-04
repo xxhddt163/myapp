@@ -54,12 +54,13 @@ def control_check(application, control, edit_info=""):
 def menu_format(choice_list):
     """将中文选单格式为英文名"""
 
-    menu_dir = {"微信": "Wechat",
+    menu_dir = {"微信": "Wechat",  # 第五步
                 "Net Farmework3": "NF3",
                 "360驱动大师": "360drv",
                 "谷歌浏览器": "Chrome",
                 "腾讯视频": "TXvideo",
-                "爱奇艺": "IQIYI"}
+                "爱奇艺": "IQIYI",
+                "DirectX9": "DX"}
 
     menu_temp = choice_list.copy()
     for item in choice_list:
@@ -83,6 +84,7 @@ if __name__ == '__main__':
                             ["安装", "Button"]],
                  "VCRedist": [["确定", "Button"]],
                  "NF3": [["确定", "Button"]],
+                 "DX": [["确定", "Button"]],
                  "OFFICE2013": [["Edit8", ""]],
                  "CAD2007": [["确定", "Button"]],
                  "360drv": [["已经阅读并同意", "Button"],
@@ -111,7 +113,8 @@ if __name__ == '__main__':
                  "360drv": "win32",
                  "Chrome": "win32",
                  "TXvideo": "win32",
-                 "IQIYI": "win32"}
+                 "IQIYI": "win32",
+                 "DX": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -123,11 +126,12 @@ if __name__ == '__main__':
                         "360drv": "欢迎使用 360驱动大师",
                         "Chrome": "",
                         "TXvideo": "腾讯视频 2020 安装程序 ",
-                        "IQIYI": "执行的操作 安装向导"}
+                        "IQIYI": "执行的操作 安装向导",
+                        "DX": "DirectX 9.0c 一键安装 - IT天空出品"}
 
     choice = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
-                                   choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "OFFICE2013", "CAD2007",
-                                            "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺"])
+                                   choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9",
+                                            "OFFICE2013", "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺"])
     menu = menu_format(choice)
     for each in menu:
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
@@ -189,6 +193,13 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
+        if each == "DX":
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "DX" + "\\" + "DX", "信息")
+            window = app["信息"]
+            window.child_window(title="是(&Y)", class_name="Button").click_input()
+            app = new_window_ready_path("win32", os.getcwd() + "\\" + "DX" + "\\" + "DX", "信息")
+            window = app["信息"]
+            window.child_window(title="确定", class_name="Button").click_input()
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
             p.app.top_window().type_keys("%i")
@@ -247,4 +258,4 @@ if __name__ == '__main__':
 
     end_time = (time.strftime("%H:%M", time.localtime()))
     easygui.msgbox(
-        f"程序安装完毕，耗时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个程序，分别是{','.join(choice)}")
+        f"程序安装完毕，耗时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，分别是{','.join(choice)}")
