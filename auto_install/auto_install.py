@@ -6,6 +6,7 @@ from pywinauto import Application
 from easygui import multchoicebox, msgbox
 import offce_select
 from pyautogui import press, hotkey
+import gui
 
 start_time = (strftime("%H:%M", localtime()))
 
@@ -62,7 +63,8 @@ def menu_format(choice_list):
                 "谷歌浏览器": "Chrome",
                 "腾讯视频": "TXvideo",
                 "爱奇艺": "IQIYI",
-                "DirectX9": "DX"}
+                "DirectX9": "DX",
+                "QQ音乐": "QQmusic"}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -117,7 +119,8 @@ if __name__ == '__main__':
                  "TXvideo": "win32",
                  "IQIYI": "win32",
                  "DX": "win32",
-                 "PS CS3": "win32"}
+                 "PS CS3": "win32",
+                 "QQmusic": "uia"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -131,13 +134,18 @@ if __name__ == '__main__':
                         "TXvideo": "腾讯视频 2020 安装程序 ",
                         "IQIYI": "执行的操作 安装向导",
                         "DX": "DirectX 9.0c 一键安装 - IT天空出品",
-                        "PS CS3": "安装 - Adobe Photoshop CS3 Extended"}
+                        "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
+                        "QQmusic": ""}
 
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
                            choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
-                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3"])
+                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "QQ音乐"])
     menu = menu_format(choice)
     for each in menu:
+        if each == "QQmusic":
+            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            sleep(2)
+            gui.gui_run(each, 2)
 
         if each == "PS CS3":
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
