@@ -1,14 +1,16 @@
 from pywinauto import Application
 import time
+from os.path import join
 
 
 class Program:
     def __init__(self, program_path, program_name, program_type, main_window):
         """实例化应用对象，实例化主窗口文件"""
         if program_name == "OFFICE2013" or program_name == "CAD2007":
-            self.app = Application(backend=program_type).start(program_path + "\\" + program_name + "\\" + "setup")
+            self.app = Application(backend=program_type).start(join(program_path, "app_pkg", program_name, "setup"))
         else:
-            self.app = Application(backend=program_type).start(program_path + "\\" + program_name + "\\" + program_name)
+            self.app = Application(backend=program_type).start(
+                join(program_path, "app_pkg", program_name, program_name))
         self.program_name = program_name
         self.main_window = main_window
         self.program_type = program_type
@@ -45,7 +47,7 @@ class Program:
     def __edit_text_win32(self):
         """编辑edit win32类程序"""
         path = r"D:\Program Files"
-        self.main.set_text(path + "\\" + self.program_name)
+        self.main.set_text(join(path, self.program_name))
         self.main = self.app[self.main_window]
 
     def __edit_text_uia(self):
@@ -54,5 +56,5 @@ class Program:
         time.sleep(1)
         self.main.type_keys("^a")  # ctrl + a
         time.sleep(.5)
-        self.main.type_keys(path + "\\" + self.program_name)
+        self.main.type_keys(join(path, self.program_name))
         self.main = self.app[self.main_window]

@@ -1,13 +1,13 @@
 from datetime import datetime
 from setup_class import Program
 import os
-import time
+from time import localtime, strftime, sleep
 from pywinauto import Application
-import easygui
+from easygui import multchoicebox, msgbox
 import offce_select
-import pyautogui
+from pyautogui import press, hotkey
 
-start_time = (time.strftime("%H:%M", time.localtime()))
+start_time = (strftime("%H:%M", localtime()))
 
 
 def running_time(start, end):
@@ -133,38 +133,38 @@ if __name__ == '__main__':
                         "DX": "DirectX 9.0c 一键安装 - IT天空出品",
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended"}
 
-    choice = easygui.multchoicebox(msg="请选择安装的程序", title="选择程序",
-                                   choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9",
-                                            "OFFICE2013", "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3"])
+    choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
+                           choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
+                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3"])
     menu = menu_format(choice)
     for each in menu:
 
         if each == "PS CS3":
-            temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
-            time.sleep(2)
-            pyautogui.hotkey('alt', 'n')
-            pyautogui.press('home')
-            pyautogui.press('delete')
-            pyautogui.press('d')
-            pyautogui.press('\n')
-            pyautogui.press('\n')
-            pyautogui.hotkey('alt', 'n')
-            time.sleep(.5)
-            pyautogui.hotkey('alt', 'n')
-            time.sleep(.5)
-            pyautogui.hotkey('alt', 'i')
+            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            sleep(2)
+            hotkey('alt', 'n')
+            press('home')
+            press('delete')
+            press('d')
+            press('\n')
+            press('\n')
+            hotkey('alt', 'n')
+            sleep(.5)
+            hotkey('alt', 'n')
+            sleep(.5)
+            hotkey('alt', 'i')
             while True:
-                time.sleep(8)
-                pyautogui.hotkey('alt', 'f')
+                sleep(8)
+                hotkey('alt', 'f')
                 if not temp.is_process_running():
                     break
             continue
 
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
-            temp = Application(backend=type_menu[each]).start(os.getcwd() + "\\" + each + "\\" + each)
-            time.sleep(5)
+            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            sleep(5)
             while True:
-                time.sleep(5)
+                sleep(5)
                 if not temp.is_process_running():
                     break
             os.system('taskkill /IM chrome.exe /F')
@@ -175,7 +175,7 @@ if __name__ == '__main__':
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
             if p.app.top_window().wait("ready", timeout=300):
                 p.app.top_window().type_keys("%a")
-                time.sleep(.5)
+                sleep(.5)
                 p.app.top_window().type_keys("%c")
                 p.app.top_window().wait("ready", timeout=300)
                 p.app.top_window().type_keys("%u")
@@ -195,10 +195,10 @@ if __name__ == '__main__':
                 p.check_window(title_name, class_name)
                 p.button_click()
         if each == "QQ":
-            time.sleep(3)
+            sleep(3)
             os.system('taskkill /IM QQ.exe /F')  # 关闭自动打开的QQ程序
         if each == "Wechat":
-            time.sleep(3)
+            sleep(3)
             os.system('taskkill /IM WeChat.exe /F')  # 关闭自动打开的微信程序
         if each == "Winrar":
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
@@ -208,82 +208,81 @@ if __name__ == '__main__':
             window = app["WinRAR 简体中文版安装"]
             window.child_window(title="完成", class_name="Button").click_input()
         if each == "VCRedist":
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
             window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "VCRedist" + "\\" + "VCRedist", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
         if each == "NF3":
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
             window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "NF3" + "\\" + "NF3", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
         if each == "DX":
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "DX" + "\\" + "DX", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
             window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.getcwd() + "\\" + "DX" + "\\" + "DX", "信息")
+            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
             p.app.top_window().type_keys("%i")
-            time.sleep(3)
+            sleep(3)
             while True:
                 try:
                     p.app.top_window().type_keys("%c")
-                    time.sleep(10)
+                    sleep(10)
                 except RuntimeError:
                     break
-            office_crack = os.getcwd() + "\\" + "OFFICE2013" + "\\" + "office13.bat"
+            office_crack = os.path.join(os.getcwd(), "app_pkg", "OFFICE2013", "office13.bat")
             os.system(office_crack)
 
         if each == "CAD2007":
             app = new_window_ready_title("AutoCAD 2007 安装", "下一步(&N)>")
             for i in ['Button2', 'RadioButton2', 'Button0']:
                 control_check(application=app, control=i)
-                time.sleep(1)
+                sleep(1)
 
             control_check(application=app, control='Edit1', edit_info="000")
-            time.sleep(0.5)
+            sleep(0.5)
             control_check(application=app, control='Edit2', edit_info="00000000")
-            time.sleep(0.5)
+            sleep(0.5)
             control_check(application=app, control='Button1')
 
             for i in range(1, 6):
                 control_check(application=app, control="Edit" + str(i), edit_info="asd")
-                time.sleep(0.5)
+                sleep(0.5)
 
             for i in ['Button1', 'Button1', 'Button1']:
                 control_check(application=app, control=i)
-                time.sleep(2)
+                sleep(2)
 
             control_check(application=app, control='Edit', edit_info=r"D:\Program Files\CAD2007")
             for i in ['Button1', 'Button1', 'Button1']:
                 control_check(application=app, control=i)
-                time.sleep(3)
+                sleep(3)
             app = new_window_ready_title("AutoCAD 2007 安装程序", "完成(&F)")
             for i in ['CheckBox', 'Button1']:
                 control_check(application=app, control=i)
-            crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "adlmdll.dll"
+            crack_path = os.path.join(os.getcwd(), "app_pkg", "CAD2007", "crack", "adlmdll.dll")
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\adlmdll.dll" /Y')
-            time.sleep(1)
-            crack_path = os.getcwd() + "\\" + "CAD2007" + "\\" + "crack" + "\\" + "lacadp.dll"
+            sleep(1)
+            crack_path = os.path.join(os.getcwd(), "app_pkg", "CAD2007", "crack", "lacadp.dll")
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\lacadp.dll" /Y')
 
         if each == "360drv":
-            time.sleep(3)
+            sleep(3)
             os.system('taskkill /IM 360DrvMgr.exe /F')
         if each == "TXvideo":
-            time.sleep(3)
+            sleep(3)
             os.system('taskkill /IM QQLive.exe /F')
         if each == "IQIYI":
-            time.sleep(3)
+            sleep(3)
             os.system('taskkill /IM QyClient.exe /F')
 
-    end_time = (time.strftime("%H:%M", time.localtime()))
-    easygui.msgbox(
-        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，{','.join(choice)}")
+    end_time = (strftime("%H:%M", localtime()))
+    msgbox(f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，{','.join(choice)}")
