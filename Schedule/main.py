@@ -18,30 +18,57 @@ def main(excel):
                 cell = row + str(n2)  # 单元格具体坐标
                 if excel[sheet_name][cell].value is not None:
                     teacher_name = excel[sheet_name][cell].value.replace('\r', '').split("\n")[1]  # 单元格中教师名
-                    if teacher_name in person_name:
+                    if teacher_name in person_name:  # 如果教师名字存在于请假列表中
                         info = teacher_info.copy()  # 教师信息备份
 
                         subject_name = excel[sheet_name][cell].value.replace('\r', '').split("\n")[
                             0]  # 单元格中科目名
                         grade = sheet_name[:3]  # 年级
-                        info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
-                        info2 = filter_2(cell, excel, info1)  # 能上指定课程并且课程不冲突的教师信息
-                        if len(info2) != 0:
-                            final_info = init_grade(grade, info2)  # 最终的教师名单
-                            final_name = random_name(final_info)  # 代课老师
-                            comment(excel[sheet_name][cell],
-                                    teacher_name, final_name)
-                            excel[sheet_name][cell].value = subject_name + '\n' + final_name
-                            cell_format(excel[sheet_name][cell])
-                            log(num, excel, teacher_name, subject_name, sheet_name, cell, final_info[0])
-                            num += 1
-                        else:
-                            excel[sheet_name][cell].value = subject_name + '\n' + "无候选教师"
-                            cell_format1(excel[sheet_name][cell])
-                            log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2))
-                            referrals(teacher_info, grade, excel, cell, num)
-                            num += 1
+                        sheet_class = sheet_name[4]  # 班级
+                        if way == "1、课表自动修改(优先科目)":
+                            info1 = filter_1(subject_name, info)  # 能上指定课程的教师信息字典
+                            info2 = filter_2(cell, excel, info1)  # 能上指定课程并且课程不冲突的教师信息
+                            if len(info2) != 0:
+                                final_info = init_grade(grade, info2)  # 最终的教师名单
+                                final_name = random_name(final_info)  # 代课老师
+                                comment(excel[sheet_name][cell], teacher_name, final_name)
+                                excel[sheet_name][cell].value = subject_name + '\n' + final_name
+                                cell_format(excel[sheet_name][cell])
+                                log(num, excel, teacher_name, subject_name, sheet_name, cell, final_info[0])
+                                num += 1
+                            else:
+                                excel[sheet_name][cell].value = subject_name + '\n' + "无候选教师"
+                                cell_format1(excel[sheet_name][cell])
+                                log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2))
+                                referrals(teacher_info, grade, excel, cell, num)
+                                num += 1
+                        elif way == "2、课表自动修改(优先班级)":
+                            info1 = filter_grade_class(info, grade, sheet_class)
+                            info2 = filter_2(cell, excel, info1)
+                            if len(info2) != 0:
+                                final_name = random_name(info2)
+                                comment(excel[sheet_name][cell], teacher_name, final_name)
+                                cache = random_name(teacher_info[final_name][1].split('、'))
+                                excel[sheet_name][cell].value = cache + '\n' + final_name
+                                cell_format(excel[sheet_name][cell])
+                                log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2), final_name)
+                                num += 1
+                            else:
+                                excel[sheet_name][cell].value = subject_name + '\n' + "无候选教师"
+                                cell_format1(excel[sheet_name][cell])
+                                log(num, excel, teacher_name, subject_name, sheet_name, row + str(n2))
+                                referrals(teacher_info, grade, excel, cell, num)
+                                num += 1
     excel.save(file_save)
+
+
+def filter_grade_class(teachers_info, grade, sheet_class):
+    """筛选年级、班级符合的教师"""
+    cache = []
+    for each in teachers_info.keys():
+        if teachers_info[each][0] == grade and sheet_class in teachers_info[each][2]:
+            cache.append(each)
+    return cache
 
 
 def referrals(info, grade, excel, cell, num):
@@ -143,7 +170,7 @@ def filter_2(cell, excel, info):
     for sheet_name in excel.sheetnames:
         if excel[sheet_name][cell].value is not None:
             if excel[sheet_name][cell].value.replace('\r', '').split("\n")[1] in info:
-                info.pop(excel[sheet_name][cell].value.replace('\r', '').split("\n")[1])
+                info.pop(info.index(excel[sheet_name][cell].value.replace('\r', '').split("\n")[1]))
     return info
 
 
@@ -180,8 +207,8 @@ def remove_person(info, name):
 
 
 if __name__ == '__main__':
-    way = easygui.choicebox("选择功能", "选择功能", ["①课表自动修改", "②根据总表改内容"])
-    if way == "①课表自动修改":
+    way = easygui.choicebox("选择功能", "选择功能", ["1、课表自动修改(优先科目)", "2、课表自动修改(优先班级)", "3、根据总表改内容"])
+    if way == "1、课表自动修改(优先科目)" or "2、课表自动修改(优先班级)":
         teacher_info = load_pickle("teacher_info.pickle")
 
         with open("请假人员.txt", mode='r') as temp:
@@ -198,5 +225,5 @@ if __name__ == '__main__':
 
         teacher_schedule_work = openpyxl.load_workbook(teacher_schedule)
         main(teacher_schedule_work)
-    elif way == "②根据总表改内容":
+    elif way == "3、根据总表改内容":
         r = Remark()
