@@ -1,12 +1,12 @@
 from os import getcwd
 from os.path import join
 from os import listdir
-from pyautogui import locateCenterOnScreen, click, press
+from pyautogui import click, press, locateOnScreen
 
 """只能用pyautogui安装的程序通用模块"""
 
 
-def gui_run(app_name, key_index):
+def gui_run(app_name, key_index, confid, wait_step, wait_time=5):
     """app_name: 程序名称
        key_value: 编辑栏，非按钮"""
 
@@ -15,16 +15,15 @@ def gui_run(app_name, key_index):
     count = 0
     for each in png_list:
         while True:
-            if locateCenterOnScreen(join(path, each)) is not None:
-                x, y = locateCenterOnScreen(join(path, each))  # 获取按钮所在坐标中心位置
+            if locateOnScreen(join(path, each), confidence=confid) is not None:
+                left, top, width, height = locateOnScreen(join(path, each), confidence=confid)
+                x, y = left + width // 2, top + height // 2
                 if count == key_index:
                     click(x, y)
                     press('home')
                     press('delete')
                     press('left')
                     press('d')
-                    press('\n')
-                    press('\n')
                 else:
                     click(x, y)
                 break

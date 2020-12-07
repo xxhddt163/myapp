@@ -2,6 +2,7 @@ from os import getcwd
 from os.path import join
 from os import listdir
 import pyautogui
+from time import sleep
 
 # 通过截图模拟键盘鼠标让office只安装3个主要程序
 """path: 截图文件所在路径
@@ -13,10 +14,12 @@ def choose_menu():
     png_list = listdir(path)
     for each in png_list:
         while True:
-            if pyautogui.locateCenterOnScreen(join(path, each)) is not None:
-                x, y = pyautogui.locateCenterOnScreen(join(path, each))  # 获取按钮所在坐标中心位置
+            if pyautogui.locateOnScreen(join(path, each), confidence=0.9) is not None:
+                left, top, width, height = pyautogui.locateOnScreen(join(path, each), confidence=0.9)
+                x, y = left + width // 2, top + height // 2
                 pyautogui.rightClick(x, y)
-                pyautogui.hotkey('alt', 'n')
+                pyautogui.hotkey('n')
                 break
             else:
+                sleep(1)
                 continue

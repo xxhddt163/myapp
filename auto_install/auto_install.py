@@ -4,9 +4,9 @@ import os
 from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import multchoicebox, msgbox
-import offce_select
-from pyautogui import press, hotkey
-import gui
+from myapp.auto_install import offce_select
+from pyautogui import press, hotkey, size, leftClick, rightClick
+from myapp.auto_install import gui
 
 start_time = (strftime("%H:%M", localtime()))
 
@@ -64,13 +64,22 @@ def menu_format(choice_list):
                 "腾讯视频": "TXvideo",
                 "爱奇艺": "IQIYI",
                 "DirectX9": "DX",
-                "QQ音乐": "QQmusic"}
+                "网易云音乐": "163music",
+                "搜狗输入法": "SougouPY"}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
         if item in menu_dir:
             menu_temp[menu_temp.index(item)] = menu_dir[item]
     return menu_temp
+
+
+def desk_top():
+    """显示桌面"""
+    x, y = size()
+    rightClick(x // 2, y - 2)
+    press('s')
+    sleep(1)
 
 
 if __name__ == '__main__':
@@ -120,7 +129,8 @@ if __name__ == '__main__':
                  "IQIYI": "win32",
                  "DX": "win32",
                  "PS CS3": "win32",
-                 "QQmusic": "uia"}
+                 "163music": "uia",
+                 "SougouPY": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -135,17 +145,33 @@ if __name__ == '__main__':
                         "IQIYI": "执行的操作 安装向导",
                         "DX": "DirectX 9.0c 一键安装 - IT天空出品",
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
-                        "QQmusic": ""}
+                        "163music": "",
+                        "SougouPY": ""}
 
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
                            choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
-                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "QQ音乐"])
+                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐", "搜狗输入法"])
     menu = menu_format(choice)
     for each in menu:
-        if each == "QQmusic":
+        if each == "163music":
+            desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(2)
-            gui.gui_run(each, 2)
+            gui.gui_run(each, 3, 0.7)
+            while not temp.is_process_running():
+                sleep(2)
+                os.system('taskkill /IM cloudmusic.exe /F')
+                break
+            continue
+
+        if each == "SougouPY":
+            desk_top()
+            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            sleep(2)
+            gui.gui_run(each, 3, 0.7)
+            while not temp.is_process_running():
+                break
+            continue
 
         if each == "PS CS3":
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
