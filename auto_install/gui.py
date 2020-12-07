@@ -2,11 +2,12 @@ from os import getcwd
 from os.path import join
 from os import listdir
 from pyautogui import click, press, locateOnScreen
+from time import sleep
 
 """只能用pyautogui安装的程序通用模块"""
 
 
-def gui_run(app_name, key_index, confid, wait_step, wait_time=5):
+def gui_run(app_name, key_index, confid):
     """app_name: 程序名称
        key_value: 编辑栏，非按钮"""
 
@@ -28,5 +29,6 @@ def gui_run(app_name, key_index, confid, wait_step, wait_time=5):
                     click(x, y)
                 break
             else:
+                sleep(5)
                 continue
         count += 1

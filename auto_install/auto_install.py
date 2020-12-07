@@ -153,6 +153,7 @@ if __name__ == '__main__':
                                     "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐", "搜狗输入法"])
     menu = menu_format(choice)
     for each in menu:
+        os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
         if each == "163music":
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
@@ -167,7 +168,7 @@ if __name__ == '__main__':
         if each == "SougouPY":
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
-            sleep(2)
+            sleep(.5)
             gui.gui_run(each, 3, 0.7)
             while not temp.is_process_running():
                 break
