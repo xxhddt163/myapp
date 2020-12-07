@@ -4,9 +4,9 @@ import os
 from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import multchoicebox, msgbox
-from myapp.auto_install import offce_select
-from pyautogui import press, hotkey, size, leftClick, rightClick
-from myapp.auto_install import gui
+import offce_select
+from pyautogui import press, hotkey, size, rightClick
+import gui
 
 start_time = (strftime("%H:%M", localtime()))
 
@@ -158,10 +158,11 @@ if __name__ == '__main__':
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(2)
-            gui.gui_run(each, 3, 0.7)
+            gui.gui_run(each, 3, 0.5)
             while not temp.is_process_running():
                 sleep(2)
                 os.system('taskkill /IM cloudmusic.exe /F')
+                sleep(3)
                 break
             continue
 
@@ -169,7 +170,7 @@ if __name__ == '__main__':
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(.5)
-            gui.gui_run(each, 3, 0.7)
+            gui.gui_run(each, 3, 0.5)
             while not temp.is_process_running():
                 break
             continue

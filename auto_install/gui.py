@@ -5,6 +5,7 @@ from pyautogui import click, press, locateOnScreen, hotkey
 from time import sleep
 import pyperclip
 
+
 """只能用pyautogui安装的程序通用模块"""
 
 

@@ -14,7 +14,7 @@ def choose_menu():
     png_list = listdir(path)
     for each in png_list:
         while True:
-            if pyautogui.locateOnScreen(join(path, each), confidence=0.9) is not None:
+            if pyautogui.locateOnScreen(join(path, each), confidence=0.7) is not None:
                 left, top, width, height = pyautogui.locateOnScreen(join(path, each), confidence=0.9)
                 x, y = left + width // 2, top + height // 2
                 pyautogui.rightClick(x, y)
