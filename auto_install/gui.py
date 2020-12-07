@@ -1,8 +1,9 @@
 from os import getcwd
 from os.path import join
 from os import listdir
-from pyautogui import click, press, locateOnScreen
+from pyautogui import click, press, locateOnScreen, hotkey
 from time import sleep
+import pyperclip
 
 """只能用pyautogui安装的程序通用模块"""
 
@@ -24,7 +25,8 @@ def gui_run(app_name, key_index, confid):
                     press('home')
                     press('delete')
                     press('left')
-                    press('d')
+                    pyperclip.copy('d')
+                    hotkey('ctrl', 'v')
                 else:
                     click(x, y)
                 break
