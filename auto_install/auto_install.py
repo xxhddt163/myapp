@@ -7,8 +7,10 @@ from easygui import multchoicebox, msgbox
 import offce_select
 from pyautogui import press, hotkey, size, rightClick
 import gui
+from comtypes.gen.UIAutomationClient import *
 
 start_time = (strftime("%H:%M", localtime()))
+failure = []  # 保存安装失败的软件名称
 
 
 def running_time(start, end):
@@ -27,6 +29,17 @@ def new_window_ready_path(backend, path, title):
             continue
         application.window(title=title).wait("ready", timeout=300)
         return application
+
+
+def connect_progaram(path):
+    """通过路径连接运行的程序"""
+    while True:
+        try:
+            Application().connect(path=path)
+        except:
+            continue
+        else:
+            return True
 
 
 def new_window_ready_title(title1, title2):
@@ -65,7 +78,8 @@ def menu_format(choice_list):
                 "爱奇艺": "IQIYI",
                 "DirectX9": "DX",
                 "网易云音乐": "163music",
-                "搜狗输入法": "SougouPY"}
+                "搜狗输入法": "SougouPY",
+                "QQ音乐": "QQmusic"}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -130,7 +144,9 @@ if __name__ == '__main__':
                  "DX": "win32",
                  "PS CS3": "win32",
                  "163music": "uia",
-                 "SougouPY": "win32"}
+                 "SougouPY": "win32",
+                 "WPS": "win32",
+                 "QQmusic": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -150,30 +166,68 @@ if __name__ == '__main__':
 
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
                            choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
-                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐", "搜狗输入法"])
+                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐",
+                                    "QQ音乐", "搜狗输入法", "WPS"])
     menu = menu_format(choice)
     for each in menu:
         os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
+
+        if each == "QQmusic":
+            desk_top()
+            temp = Application(backend=type_menu[each]).start(
+                os.path.join(os.getcwd(), "app_pkg", each, "QQMusic_YQQFullStack"))
+            sleep(2)
+            check = gui.gui_run(each, 2, 0.6)
+            if check:
+                if connect_progaram(r"D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe"):
+                    sleep(2)
+                    os.system('taskkill /IM QQmusic.exe /F')
+                    continue
+            else:
+                failure.append("QQ音乐")
+                continue
+
+        if each == "WPS":
+            desk_top()
+            temp = Application(backend=type_menu[each]).start(
+                os.path.join(os.getcwd(), "app_pkg", each, "W.P.S.10132.12012.2019"))
+            sleep(2)
+            check = gui.gui_run(each, 2, 0.6, 20)
+            if check:
+                if connect_progaram(r"D:\Users\admin\AppData\Local\Kingsoft\WPS Office\11.1.0.10132\office6\wps.exe"):
+                    sleep(2)
+                    os.system('taskkill /IM wps.exe /F')
+                    continue
+            else:
+                failure.append("WPS")
+                continue
+
         if each == "163music":
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(2)
-            gui.gui_run(each, 3, 0.5)
-            while not temp.is_process_running():
-                sleep(2)
-                os.system('taskkill /IM cloudmusic.exe /F')
-                sleep(3)
-                break
-            continue
+            check = gui.gui_run(each, 3, 0.6)
+            if check:
+                if connect_progaram(r"D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe"):
+                    sleep(2)
+                    os.system('taskkill /IM cloudmusic.exe /F')
+                    continue
+            else:
+                failure.append("网易云音乐")
+                continue
 
         if each == "SougouPY":
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(.5)
-            gui.gui_run(each, 3, 0.5)
-            while not temp.is_process_running():
-                break
-            continue
+            check = gui.gui_run(each, 3, 0.6)
+            if check:
+                while not temp.is_process_running():
+                    break
+                continue
+            else:
+                failure.append("搜狗输入法")
+                continue
 
         if each == "PS CS3":
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
@@ -217,8 +271,12 @@ if __name__ == '__main__':
                 p.app.top_window().type_keys("%u")
                 p.app.top_window().wait("ready", timeout=300)
                 p.app.top_window().set_focus()
-                offce_select.choose_menu()
-                p.app.top_window().type_keys("%f")
+                check = offce_select.choose_menu()
+                if check:
+                    p.app.top_window().type_keys("%f")
+                else:
+                    failure.append("OFFICE2013")
+                    continue
 
         step_len = len(step_menu[each])
         for i in range(step_len):
@@ -321,4 +379,5 @@ if __name__ == '__main__':
             os.system('taskkill /IM QyClient.exe /F')
 
     end_time = (strftime("%H:%M", localtime()))
-    msgbox(f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共安装了{len(menu)}个软件，{','.join(choice)}")
+    msgbox(
+        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共选择了{len(menu)}个软件，分别为：{','.join(choice)}，安装失败的软件为：{','.join(failure)}")
