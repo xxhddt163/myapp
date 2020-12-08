@@ -171,6 +171,11 @@ if __name__ == '__main__':
     menu = menu_format(choice)
     for each in menu:
         os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
+        os.system(
+            'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 '
+            '/t REG_DWORD /f')  # 关闭微软def杀毒
+        os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
+        os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
         if each == "QQmusic":
             desk_top()
@@ -230,25 +235,15 @@ if __name__ == '__main__':
                 continue
 
         if each == "PS CS3":
+            desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(2)
-            hotkey('alt', 'n')
-            press('home')
-            press('delete')
-            press('d')
-            press('\n')
-            press('\n')
-            hotkey('alt', 'n')
-            sleep(.5)
-            hotkey('alt', 'n')
-            sleep(.5)
-            hotkey('alt', 'i')
-            while True:
-                sleep(8)
-                hotkey('alt', 'f')
-                if not temp.is_process_running():
-                    break
-            continue
+            check = gui.gui_run(each, 1, 0.8)
+            if check:
+                continue
+            else:
+                failure.append("PS CS3")
+                continue
 
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
