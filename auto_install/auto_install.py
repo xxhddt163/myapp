@@ -5,12 +5,16 @@ from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import multchoicebox, msgbox
 import offce_select
-from pyautogui import press, hotkey, size, rightClick
+from pyautogui import press, size, rightClick
 import gui
 from comtypes.gen.UIAutomationClient import *
 
 start_time = (strftime("%H:%M", localtime()))
 failure = []  # 保存安装失败的软件名称
+os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
+os.system('reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
+os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
+os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
 
 def running_time(start, end):
@@ -79,7 +83,8 @@ def menu_format(choice_list):
                 "DirectX9": "DX",
                 "网易云音乐": "163music",
                 "搜狗输入法": "SougouPY",
-                "QQ音乐": "QQmusic"}
+                "QQ音乐": "QQmusic",
+                "钉钉": "Dtalk"}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -146,7 +151,8 @@ if __name__ == '__main__':
                  "163music": "uia",
                  "SougouPY": "win32",
                  "WPS": "win32",
-                 "QQmusic": "win32"}
+                 "QQmusic": "win32",
+                 "Dtalk": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -162,20 +168,15 @@ if __name__ == '__main__':
                         "DX": "DirectX 9.0c 一键安装 - IT天空出品",
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
                         "163music": "",
-                        "SougouPY": ""}
+                        "SougouPY": "",
+                        "Dtalk": "钉钉 安装"}
 
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
-                           choices=["QQ", "微信", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
+                           choices=["QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
                                     "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐",
                                     "QQ音乐", "搜狗输入法", "WPS"])
     menu = menu_format(choice)
     for each in menu:
-        os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
-        os.system(
-            'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 '
-            '/t REG_DWORD /f')  # 关闭微软def杀毒
-        os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
-        os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
         if each == "QQmusic":
             desk_top()
@@ -197,7 +198,7 @@ if __name__ == '__main__':
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "W.P.S.10132.12012.2019"))
             sleep(2)
-            check = gui.gui_run(each, 2, 0.6, 20)
+            check = gui.gui_run(each, 2, 0.6, sleep_time=60)
             if check:
                 if connect_progaram(r"D:\Users\admin\AppData\Local\Kingsoft\WPS Office\11.1.0.10132\office6\wps.exe"):
                     sleep(2)
@@ -257,6 +258,13 @@ if __name__ == '__main__':
 
         p = Program(os.getcwd(), each, type_menu[each], main_window_name[each])
 
+        if each == "Dtalk":
+            for i in ['Button', 'Edit', 'Button2', 'CheckBox', 'Button2']:
+                if "Edit" not in i:
+                    control_check(application=p.app, control=i)
+                elif "Edit" in i:
+                    control_check(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
+
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
             if p.app.top_window().wait("ready", timeout=300):
                 p.app.top_window().type_keys("%a")
@@ -283,6 +291,7 @@ if __name__ == '__main__':
             elif class_name == "Button" or class_name == "":
                 p.check_window(title_name, class_name)
                 p.button_click()
+
         if each == "QQ":
             sleep(3)
             os.system('taskkill /IM QQ.exe /F')  # 关闭自动打开的QQ程序
