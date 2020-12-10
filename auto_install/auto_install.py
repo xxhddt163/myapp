@@ -12,7 +12,8 @@ from comtypes.gen.UIAutomationClient import *
 start_time = (strftime("%H:%M", localtime()))
 failure = []  # 保存安装失败的软件名称
 os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
-os.system('reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
+os.system(
+    'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
 os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
 os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
@@ -64,10 +65,10 @@ def control_check(application, control, edit_info=""):
     按钮：自动点击
     编辑框：填写内容"""
     if "Button" in control or "CheckBox" in control:
-        application.top_window()[control].wait("ready", timeout=10)
+        application.top_window()[control].wait("ready", timeout=100)
         application.top_window()[control].click_input()
     elif "Edit" in control:
-        application.top_window()[control].wait("ready", timeout=10)
+        application.top_window()[control].wait("ready", timeout=100)
         application.top_window()[control].set_text(edit_info)
 
 
@@ -264,6 +265,7 @@ if __name__ == '__main__':
                     control_check(application=p.app, control=i)
                 elif "Edit" in i:
                     control_check(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
+            continue
 
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
             if p.app.top_window().wait("ready", timeout=300):
