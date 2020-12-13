@@ -1,22 +1,35 @@
 import zipfile
 from easygui import diropenbox, multchoicebox
+from os.path import join
 
 
-def unzip(menu):
+def unzip(choose):
     """
     解压制定软件安装包到指定目录
-    :param menu: 选择安装的文件菜单
+    :param choose: 选择安装的文件菜单
     :return: 软件解压目录
     """
     extract_dir = diropenbox("选择加压文件保存的位置")
     zip_file = zipfile.ZipFile("auto_install.zip", "r")
-    for program in menu:
+    for program in choose:
         for name in zip_file.namelist():
             if program in name:
                 zip_file.extract(name, extract_dir)
     zip_file.extract('auto_install.exe', extract_dir)
     zip_file.close()
     return extract_dir
+
+
+def menu_to_file(path, choose):
+    """
+    将选择的文件转换成文件
+    :param choose: 选择的软件
+    :param path: 文件保存路径
+    :return: None
+    """
+    with open(join(path, "menu.txt"), "w") as menu_file:
+        menu_file.write("、".join(choose))
+
 
 def menu_format(choice_list):
     """将中文选单格式为英文名"""
@@ -46,4 +59,5 @@ if __name__ == '__main__':
                                     "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐",
                                     "QQ音乐", "搜狗输入法", "WPS"])
     menu = menu_format(choice)
-    extract_dir = unzip(menu)
+    ex_dir = unzip(menu)
+    menu_to_file(ex_dir, menu)

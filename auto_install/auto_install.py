@@ -72,34 +72,21 @@ def control_check(application, control, edit_info=""):
         application.top_window()[control].set_text(edit_info)
 
 
-def menu_format(choice_list):
-    """将中文选单格式为英文名"""
-
-    menu_dir = {"微信": "Wechat",  # 第五步
-                "Net Farmework3": "NF3",
-                "360驱动大师": "360drv",
-                "谷歌浏览器": "Chrome",
-                "腾讯视频": "TXvideo",
-                "爱奇艺": "IQIYI",
-                "DirectX9": "DX",
-                "网易云音乐": "163music",
-                "搜狗输入法": "SougouPY",
-                "QQ音乐": "QQmusic",
-                "钉钉": "Dtalk"}
-
-    menu_temp = choice_list.copy()
-    for item in menu_temp:
-        if item in menu_dir:
-            menu_temp[menu_temp.index(item)] = menu_dir[item]
-    return menu_temp
-
-
 def desk_top():
     """显示桌面"""
     x, y = size()
     rightClick(x // 2, y - 2)
     press('s')
     sleep(1)
+
+
+def load_menu():
+    """
+    读取本目录菜单文件
+    :return: 表示各文件名的列表
+    """
+    with open(os.path.join(os.getcwd(), "menu.txt")) as file:
+        return file.readline().split('、')
 
 
 if __name__ == '__main__':
@@ -172,11 +159,8 @@ if __name__ == '__main__':
                         "SougouPY": "",
                         "Dtalk": "钉钉 安装"}
 
-    choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
-                           choices=["QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
-                                    "CAD2007", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐",
-                                    "QQ音乐", "搜狗输入法", "WPS"])
-    menu = menu_format(choice)
+    menu = load_menu()
+
     for each in menu:
 
         if each == "QQmusic":
