@@ -55,6 +55,7 @@ def new_window_ready_title(title1, title2):
             if application.top_window().child_window(title=title2).exists():
                 return application
             else:
+                sleep(3)
                 continue
         except:
             continue
@@ -154,7 +155,8 @@ if __name__ == '__main__':
                  "SougouPY": "win32",
                  "WPS": "win32",
                  "QQmusic": "win32",
-                 "Dtalk": "win32"}
+                 "Dtalk": "win32"
+                 }
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -171,7 +173,8 @@ if __name__ == '__main__':
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
                         "163music": "",
                         "SougouPY": "",
-                        "Dtalk": "钉钉 安装"}
+                        "Dtalk": "钉钉 安装"
+                        }
 
     menu = load_menu()
 
@@ -197,7 +200,7 @@ if __name__ == '__main__':
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "W.P.S.10132.12012.2019"))
             sleep(2)
-            check = gui.gui_run(each, 2, 0.6, sleep_time=60)
+            check = gui.gui_run(each, 2, 0.6, sleep_time=10)
             if check:
                 if connect_progaram(r"D:\Users\admin\AppData\Local\Kingsoft\WPS Office\11.1.0.10132\office6\wps.exe"):
                     sleep(2)

@@ -18,7 +18,7 @@ def gui_run(app_name, key_index, confid, sleep_time=5):
     index = 0
     count = 0
     for each in png_list:
-        while count < 10:
+        while count < 20:
             if locateOnScreen(join(path, each), confidence=confid) is not None:
                 left, top, width, height = locateOnScreen(join(path, each), confidence=confid)
                 x, y = left + width // 2, top + height // 2
