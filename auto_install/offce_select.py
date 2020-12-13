@@ -11,7 +11,7 @@ import cv2
 
 
 def choose_menu():
-    path = join(getcwd(), "app_pkg", "office_shot")
+    path = join(getcwd(), "app_pkg", "OFFICE2013_shot")
     png_list = listdir(path)
     count = 0
     for each in png_list:
