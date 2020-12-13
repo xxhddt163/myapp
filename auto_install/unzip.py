@@ -1,6 +1,7 @@
 import zipfile
 from easygui import diropenbox, multchoicebox
 from os.path import join
+from comtypes.gen.UIAutomationClient import *
 
 
 def unzip(choose):
@@ -15,6 +16,7 @@ def unzip(choose):
         for name in zip_file.namelist():
             if program in name:
                 zip_file.extract(name, extract_dir)
+                print(f"正在将文件{name}解压到{extract_dir}")
     zip_file.extract('auto_install.exe', extract_dir)
     zip_file.close()
     return extract_dir

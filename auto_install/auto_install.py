@@ -3,7 +3,7 @@ from setup_class import Program
 import os
 from time import localtime, strftime, sleep
 from pywinauto import Application
-from easygui import multchoicebox, msgbox
+from easygui import msgbox
 import offce_select
 from pyautogui import press, size, rightClick
 import gui
@@ -87,6 +87,20 @@ def load_menu():
     """
     with open(os.path.join(os.getcwd(), "menu.txt")) as file:
         return file.readline().split('、')
+
+
+def menu_format(choice_list):
+    """将英文选单格式为中文名"""
+
+    menu_dir = {'Wechat': '微信', 'NF3': 'Net Farmework3', '360drv': '360驱动大师', 'Chrome': '谷歌浏览器', 'TXvideo': '腾讯视频',
+                'IQIYI': '爱奇艺', 'DX': 'DirectX9', '163music': '网易云音乐', 'SougouPY': '搜狗输入法', 'QQmusic': 'QQ音乐',
+                'Dtalk': '钉钉'}
+
+    menu_temp = choice_list.copy()
+    for item in menu_temp:
+        if item in menu_dir:
+            menu_temp[menu_temp.index(item)] = menu_dir[item]
+    return menu_temp
 
 
 if __name__ == '__main__':
@@ -369,5 +383,6 @@ if __name__ == '__main__':
             os.system('taskkill /IM QyClient.exe /F')
 
     end_time = (strftime("%H:%M", localtime()))
+    menu = menu_format(menu)
     msgbox(
-        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共选择了{len(menu)}个软件，分别为：{','.join(choice)}，安装失败的软件为：{','.join(failure)}")
+        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共选择了{len(menu)}个软件，分别为：{','.join(menu)}，安装失败的软件为：{','.join(failure)}")
