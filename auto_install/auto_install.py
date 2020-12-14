@@ -61,15 +61,15 @@ def new_window_ready_title(title1, title2):
             continue
 
 
-def control_check(application, control, edit_info=""):
+def control_check(application, control, edit_info="", wait_time=100):
     """根据控件类型自动编辑内容或者点击按钮
     按钮：自动点击
     编辑框：填写内容"""
-    if "Button" in control or "CheckBox" in control:
-        application.top_window()[control].wait("ready", timeout=100)
+    if "Button" in control or "CheckBox" in control or "ListBox" in control:
+        application.top_window()[control].wait("ready", timeout=wait_time)
         application.top_window()[control].click_input()
     elif "Edit" in control:
-        application.top_window()[control].wait("ready", timeout=100)
+        application.top_window()[control].wait("ready", timeout=wait_time)
         application.top_window()[control].set_text(edit_info)
 
 
@@ -256,6 +256,31 @@ if __name__ == '__main__':
                 if not temp.is_process_running():
                     break
             os.system('taskkill /IM chrome.exe /F')
+            continue
+
+        if each == "CAD2014":
+            app = Application().start(
+                os.path.join(os.getcwd(), "app_pkg", each, "setup.exe")).top_window().wait("ready", timeout=20)
+            cad2014_app = new_window_ready_title("Autodesk® AutoCAD® 2014", "退出")
+            for i in ['ListBox3', '我接受Button', '下一步Button']:
+                control_check(application=cad2014_app, control=i)
+                sleep(1)
+            control_check(application=cad2014_app, control="序列号:Edit", edit_info="666")
+            control_check(application=cad2014_app, control="Edit2", edit_info="69696969")
+            control_check(application=cad2014_app, control="产品密钥:Edit", edit_info="001F1")
+            for i in ['下一步Button', '安装路径:Edit', '安装Button']:
+                if "Edit" not in i:
+                    control_check(application=cad2014_app, control=i)
+                    sleep(1)
+                elif "Edit" in i:
+                    control_check(application=cad2014_app, control=i, edit_info=r"D:\Program Files\Autodesk")
+            sleep(120)
+            while True:
+                if cad2014_app.top_window().child_window(title="完成").exists():
+                    cad2014_app.top_window()['完成'].click_input()
+                    break
+                else:
+                    sleep(3)
             continue
 
         p = Program(os.getcwd(), each, type_menu[each], main_window_name[each])
