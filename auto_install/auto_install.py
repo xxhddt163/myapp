@@ -5,17 +5,14 @@ from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import textbox
 import offce_select
-from pyautogui import press, size, rightClick
+from pyautogui import press, size, rightClick, hotkey
 import gui
 from comtypes.gen.UIAutomationClient import *
+import pyperclip
 
 start_time = (strftime("%H:%M", localtime()))
 failure = []  # 保存安装失败的软件名称
-os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
-os.system(
-    'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
-os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
-os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
+
 
 
 def running_time(start, end):
@@ -95,7 +92,7 @@ def menu_format(choice_list):
 
     menu_dir = {'Wechat': '微信', 'NF3': 'Net Farmework3', '360drv': '360驱动大师', 'Chrome': '谷歌浏览器', 'TXvideo': '腾讯视频',
                 'IQIYI': '爱奇艺', 'DX': 'DirectX9', '163music': '网易云音乐', 'SougouPY': '搜狗输入法', 'QQmusic': 'QQ音乐',
-                'Dtalk': '钉钉'}
+                'Dtalk': '钉钉', 'Kugou': '酷狗音乐'}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -155,8 +152,8 @@ if __name__ == '__main__':
                  "SougouPY": "win32",
                  "WPS": "win32",
                  "QQmusic": "win32",
-                 "Dtalk": "win32"
-                 }
+                 "Dtalk": "win32",
+                 "Kugou": "win32"}
 
     main_window_name = {"QQ": "腾讯QQ安装向导",  # 第二步：主窗口名称
                         "Wechat": "微信安装向导",
@@ -173,12 +170,32 @@ if __name__ == '__main__':
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
                         "163music": "",
                         "SougouPY": "",
-                        "Dtalk": "钉钉 安装"
+                        "Dtalk": "钉钉 安装",
+                        "Kugou": "酷狗音乐安装程序"
                         }
 
     menu = load_menu()
 
+    os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
+    os.system(
+        'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
+    os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
+    os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
+
     for each in menu:
+
+        if each == "Kugou":
+            desk_top()
+            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            sleep(2)
+            check = gui.gui_run(each, 1, 0.6)
+            if check:
+                if connect_progaram(r"D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe"):
+                    sleep(2)
+                    os.system('taskkill /IM KuGou.exe /F')
+            else:
+                failure.append("酷狗音乐")
+                continue
 
         if each == "QQmusic":
             desk_top()
@@ -259,8 +276,13 @@ if __name__ == '__main__':
             continue
 
         if each == "CAD2014":
-            app = Application().start(
-                os.path.join(os.getcwd(), "app_pkg", each, "setup.exe")).top_window().wait("ready", timeout=20)
+            cad_path = os.path.join(os.getcwd(), "app_pkg", each, "Setup.exe")
+            pyperclip.copy(cad_path)
+            hotkey('win', 'r')
+            sleep(.5)
+            hotkey('ctrl', 'v')
+            sleep(.5)
+            hotkey('enter')
             cad2014_app = new_window_ready_title("Autodesk® AutoCAD® 2014", "退出")
             for i in ['ListBox3', '我接受Button', '下一步Button']:
                 control_check(application=cad2014_app, control=i)

@@ -46,7 +46,8 @@ def menu_format(choice_list):
                 "网易云音乐": "163music",
                 "搜狗输入法": "SougouPY",
                 "QQ音乐": "QQmusic",
-                "钉钉": "Dtalk"}
+                "钉钉": "Dtalk",
+                "酷狗音乐": "Kugou"}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -59,7 +60,7 @@ if __name__ == '__main__':
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
                            choices=["QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
                                     "CAD2007", "CAD2014", "360驱动大师", "谷歌浏览器", "腾讯视频", "爱奇艺", "PS CS3", "网易云音乐",
-                                    "QQ音乐", "搜狗输入法", "WPS"])
+                                    "QQ音乐", "酷狗音乐", "搜狗输入法", "WPS"])
     menu = menu_format(choice)
     ex_dir = unzip(menu)
     menu_to_file(ex_dir, menu)

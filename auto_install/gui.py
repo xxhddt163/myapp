@@ -9,9 +9,14 @@ import cv2
 """只能用pyautogui安装的程序通用模块"""
 
 
-def gui_run(app_name, key_index, confid, sleep_time=5):
-    """app_name: 程序名称
-       key_value: 编辑栏，非按钮"""
+def gui_run(app_name: str, key_index: int, confid: int, sleep_time: int = 5) -> bool:
+    """
+    :param app_name: APP名称
+    :param key_index: 第几张截图为安装路径截图（截图编号从0开始）
+    :param confid: 匹配图片的精度
+    :param sleep_time: 匹配一轮下来找不到匹配项等待多少秒
+    :return: 找到指定按钮返回True 反之返回False
+    """
 
     path = join(getcwd(), "app_pkg", app_name + "_shot")  # png文件所在目录
     png_list = listdir(path)  # png文件列表
