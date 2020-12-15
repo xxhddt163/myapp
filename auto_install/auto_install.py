@@ -3,7 +3,7 @@ from setup_class import Program
 import os
 from time import localtime, strftime, sleep
 from pywinauto import Application
-from easygui import msgbox
+from easygui import textbox
 import offce_select
 from pyautogui import press, size, rightClick
 import gui
@@ -412,5 +412,5 @@ if __name__ == '__main__':
 
     end_time = (strftime("%H:%M", localtime()))
     menu = menu_format(menu)
-    msgbox(
-        f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共选择了{len(menu)}个软件，分别为：{','.join(menu)}，安装失败的软件为：{','.join(failure)}")
+    textbox('', '程序安装完毕',
+            f"程序安装完毕，用时{running_time(start_time, end_time)}分钟，共选择了{len(menu)}个软件，分别为：{','.join(menu)}，安装失败的软件为：{','.join(failure)}")
