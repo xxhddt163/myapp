@@ -9,7 +9,7 @@ import cv2
 """只能用pyautogui安装的程序通用模块"""
 
 
-def gui_run(app_name: str, key_index: int, confid: int, sleep_time: int = 5) -> bool:
+def gui_run(app_name: str, key_index: int, confid: float or int, sleep_time: int = 5) -> bool:
     """
     :param app_name: APP名称
     :param key_index: 第几张截图为安装路径截图（截图编号从0开始）

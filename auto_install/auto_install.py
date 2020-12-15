@@ -193,6 +193,7 @@ if __name__ == '__main__':
                 if connect_progaram(r"D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe"):
                     sleep(2)
                     os.system('taskkill /IM KuGou.exe /F')
+                    continue
             else:
                 failure.append("酷狗音乐")
                 continue
