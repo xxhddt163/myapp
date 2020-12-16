@@ -14,7 +14,6 @@ start_time = (strftime("%H:%M", localtime()))
 failure = []  # 保存安装失败的软件名称
 
 
-
 def running_time(start, end):
     """计算程序运行多少时间"""
     start = datetime.strptime(start, "%H:%M")  # 将字符串格式的开始时间实例化为datetime对象
@@ -200,6 +199,7 @@ if __name__ == '__main__':
 
         if each == "QQmusic":
             desk_top()
+
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "QQMusic_YQQFullStack"))
             sleep(2)
