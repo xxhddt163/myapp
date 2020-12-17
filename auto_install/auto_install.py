@@ -43,11 +43,11 @@ def connect_progaram(path):
             return True
 
 
-def new_window_ready_title(title1, title2):
+def new_window_ready_title(title1, title2, mode="win32"):
     """通过title名判断新的窗口是否连接成功"""
     while True:
         try:
-            application = Application().connect(title=title1)
+            application = Application(mode).connect(title=title1)
             if application.top_window().child_window(title=title2).exists():
                 return application
             else:
@@ -62,11 +62,13 @@ def control_check(application, control, edit_info="", wait_time=100):
     按钮：自动点击
     编辑框：填写内容"""
     if "Button" in control or "CheckBox" in control or "ListBox" in control:
-        application.top_window()[control].wait("ready", timeout=wait_time)
-        application.top_window()[control].click_input()
+        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
+            control].exists():
+            application.top_window()[control].click_input()
     elif "Edit" in control:
-        application.top_window()[control].wait("ready", timeout=wait_time)
-        application.top_window()[control].set_text(edit_info)
+        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
+            control].exists():
+            application.top_window()[control].set_text(edit_info)
 
 
 def desk_top():
@@ -123,15 +125,7 @@ if __name__ == '__main__':
                  "TXvideo": [["自定义安装Button", ""],
                              ["安装位置：Edit", ""],
                              ["立即安装", "Button"],
-                             ["立即体验", "Button"]],
-                 "IQIYI": [["阅读并同意", "Button"],
-                           ["Edit", ""],
-                           ["立即安装", "Button"],
-                           ["CheckBox", ""],
-                           ["CheckBox2", ""],
-                           ["CheckBox3", ""],
-                           ["CheckBox4", ""],
-                           ["立即体验", "Button"]]
+                             ["立即体验", "Button"]]
                  }
 
     type_menu = {"QQ": "win32",  # 第三步：程序类型
@@ -144,7 +138,6 @@ if __name__ == '__main__':
                  "360drv": "win32",
                  "Chrome": "win32",
                  "TXvideo": "win32",
-                 "IQIYI": "win32",
                  "DX": "win32",
                  "PS CS3": "win32",
                  "163music": "uia",
@@ -164,7 +157,6 @@ if __name__ == '__main__':
                         "360drv": "欢迎使用 360驱动大师",
                         "Chrome": "",
                         "TXvideo": "腾讯视频 2020 安装程序 ",
-                        "IQIYI": "执行的操作 安装向导",
                         "DX": "DirectX 9.0c 一键安装 - IT天空出品",
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
                         "163music": "",
@@ -183,11 +175,30 @@ if __name__ == '__main__':
 
     for each in menu:
 
+        if each == "IQIYI":
+            app = Application().start(os.path.join(os.getcwd(), "app_pkg", each, "iqiyi_k56008174_107328.exe"))
+            IQY_app = new_window_ready_title("爱奇艺 安装向导", "阅读并同意")
+            for i in ['阅读并同意CheckBox', 'Edit', '立即安装Button']:
+                if "Edit" not in i:
+                    control_check(application=IQY_app, control=i)
+                    sleep(1)
+                elif "Edit" in i:
+                    control_check(application=IQY_app, control=i, edit_info=r"D:\Program Files (x86)\IQIYI Video")
+            sleep(8)
+            while True:
+                if IQY_app.top_window().child_window(title="完成").exists():
+                    IQY_app.top_window()['完成'].click_input()
+                    break
+                else:
+                    sleep(3)
+            continue
+
         if each == "Kugou":
             desk_top()
-            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            temp = Application(backend=type_menu[each]).start(
+                os.path.join(os.getcwd(), "app_pkg", each, "kugou_k56008174_306395.exe"))
             sleep(2)
-            check = gui.gui_run(each, 1, 0.6)
+            check = gui.gui_run(each, 1, 0.6, sleep_time=2)
             if check:
                 if connect_progaram(r"D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe"):
                     sleep(2)
@@ -203,7 +214,7 @@ if __name__ == '__main__':
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "QQMusic_YQQFullStack"))
             sleep(2)
-            check = gui.gui_run(each, 2, 0.6)
+            check = gui.gui_run(each, 2, 0.6, sleep_time=2)
             if check:
                 if connect_progaram(r"D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe"):
                     sleep(2)
@@ -216,7 +227,7 @@ if __name__ == '__main__':
         if each == "WPS":
             desk_top()
             temp = Application(backend=type_menu[each]).start(
-                os.path.join(os.getcwd(), "app_pkg", each, "W.P.S.10132.12012.2019"))
+                os.path.join(os.getcwd(), "app_pkg", each, "wpssetup_k56008174_281235.exe"))
             sleep(2)
             check = gui.gui_run(each, 2, 0.6, sleep_time=10)
             if check:
@@ -232,7 +243,7 @@ if __name__ == '__main__':
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(2)
-            check = gui.gui_run(each, 3, 0.6)
+            check = gui.gui_run(each, 3, 0.6, sleep_time=2)
             if check:
                 if connect_progaram(r"D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe"):
                     sleep(2)
@@ -246,7 +257,7 @@ if __name__ == '__main__':
             desk_top()
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
             sleep(.5)
-            check = gui.gui_run(each, 3, 0.6)
+            check = gui.gui_run(each, 3, 0.6, sleep_time=2)
             if check:
                 while not temp.is_process_running():
                     break
