@@ -93,7 +93,7 @@ def menu_format(choice_list):
 
     menu_dir = {'Wechat': '微信', 'NF3': 'Net Farmework3', '360drv': '360驱动大师', 'Chrome': '谷歌浏览器', 'TXvideo': '腾讯视频',
                 'IQIYI': '爱奇艺', 'DX': 'DirectX9', '163music': '网易云音乐', 'SougouPY': '搜狗输入法', 'QQmusic': 'QQ音乐',
-                'Dtalk': '钉钉', 'Kugou': '酷狗音乐'}
+                'Dtalk': '钉钉', 'Kugou': '酷狗音乐', '2345explorer': '2345浏览器', '2345pinyin': '2345拼音输入法'}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -168,12 +168,39 @@ if __name__ == '__main__':
     menu = load_menu()
 
     os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
-    os.system(
-        'reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" /v "DisableAntiSpyware" /d 1 /t REG_DWORD /f')  # 关闭微软def杀毒
     os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
     os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
     for each in menu:
+
+        if each == "2345pinyin":
+            desk_top()
+            temp = Application().start(
+                os.path.join(os.getcwd(), "app_pkg", each, "2345pinyin_k56008174.exe"))
+            sleep(2)
+            check = gui.gui_run(each, 0, 0.5, sleep_time=3)
+            if check:
+                while not temp.is_process_running():
+                    break
+                continue
+            else:
+                failure.append("2345拼音输入法")
+                continue
+
+        if each == "2345explorer":
+            desk_top()
+            temp = Application().start(
+                os.path.join(os.getcwd(), "app_pkg", each, "2345explorer_k56008174.exe"))
+            sleep(2)
+            check = gui.gui_run(each, 0, 0.5, sleep_time=1)
+            if check:
+                if connect_progaram(r"D:\Program Files (x86)\2345Soft\2345Explorer"):
+                    sleep(2)
+                    os.system('taskkill /IM 2345Explorer.exe /F')
+                    continue
+            else:
+                failure.append("2345浏览器")
+                continue
 
         if each == "IQIYI":
             app = Application().start(os.path.join(os.getcwd(), "app_pkg", each, "iqiyi_k56008174_107328.exe"))
@@ -210,7 +237,6 @@ if __name__ == '__main__':
 
         if each == "QQmusic":
             desk_top()
-
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "QQMusic_YQQFullStack"))
             sleep(2)
@@ -229,12 +255,12 @@ if __name__ == '__main__':
             temp = Application(backend=type_menu[each]).start(
                 os.path.join(os.getcwd(), "app_pkg", each, "wpssetup_k56008174_281235.exe"))
             sleep(2)
-            check = gui.gui_run(each, 2, 0.6, sleep_time=10)
+            check = gui.gui_run(each, 2, 0.6, sleep_time=8)
+            sleep(5)
             if check:
-                if connect_progaram(r"D:\Users\admin\AppData\Local\Kingsoft\WPS Office\11.1.0.10132\office6\wps.exe"):
-                    sleep(2)
-                    os.system('taskkill /IM wps.exe /F')
-                    continue
+                while not temp.is_process_running():
+                    break
+                continue
             else:
                 failure.append("WPS")
                 continue
@@ -440,9 +466,6 @@ if __name__ == '__main__':
         if each == "TXvideo":
             sleep(3)
             os.system('taskkill /IM QQLive.exe /F')
-        if each == "IQIYI":
-            sleep(3)
-            os.system('taskkill /IM QyClient.exe /F')
 
     end_time = (strftime("%H:%M", localtime()))
     menu = menu_format(menu)
