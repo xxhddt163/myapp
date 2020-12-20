@@ -102,6 +102,35 @@ def menu_format(choice_list):
     return menu_temp
 
 
+def install_from_image(program_name: str, setup_name: str, edit_index: int, confidence: int or float,
+                       sleep_time: int, kill_path: str = '', kill_process: str = '', kill: bool = False, ) -> None:
+    """
+    所有通过识别截图定位的程序都通过该函数安装
+    :param program_name: 程序名字
+    :param setup_name:  安装程序的文件名
+    :param edit_index:  Edit截图文件名
+    :param confidence:  匹配图片的精度 最高为 1
+    :param sleep_time:  每次匹配图片失败等待的时间
+    :param kill_path:  程序安装完后所在路径
+    :param kill_process: 结束的进程名称
+    :param kill:  安装完程序后是否要结束对应进程（默认为False）
+    :return: None
+    """
+    desk_top()  # 调用返回桌面函数
+    prom = Application().start(os.path.join(os.getcwd(), "app_pkg", program_name, setup_name))  # 打开指定的安装程序
+    result = gui.gui_run(app_name=program_name, key_index=edit_index, confid=confidence, sleep_time=sleep_time)  # 检测结果
+    if result:
+        if not kill:  # 安装完程序后不会启动程序
+            while not prom.is_process_running():
+                break
+        elif kill:  # 安装完程序后会启动程序
+            if connect_progaram(kill_path):
+                sleep(2)
+                os.system(f'taskkill /IM {kill_process} /F')
+    else:
+        failure.extend(menu_format(program_name.split()))
+
+
 if __name__ == '__main__':
     step_menu = {"QQ": [["自定义选项", "Button"],  # 第四步：程序执行过程
                         ["添加到快速启动栏", "Button"],
@@ -174,33 +203,40 @@ if __name__ == '__main__':
     for each in menu:
 
         if each == "2345pinyin":
-            desk_top()
-            temp = Application().start(
-                os.path.join(os.getcwd(), "app_pkg", each, "2345pinyin_k56008174.exe"))
-            sleep(2)
-            check = gui.gui_run(each, 0, 0.5, sleep_time=3)
-            if check:
-                while not temp.is_process_running():
-                    break
-                continue
-            else:
-                failure.append("2345拼音输入法")
-                continue
+            install_from_image(each, '2345pinyin_k56008174.exe', 0, 0.5, 3)
+            continue
 
         if each == "2345explorer":
-            desk_top()
-            temp = Application().start(
-                os.path.join(os.getcwd(), "app_pkg", each, "2345explorer_k56008174.exe"))
-            sleep(2)
-            check = gui.gui_run(each, 0, 0.5, sleep_time=1)
-            if check:
-                if connect_progaram(r"D:\Program Files (x86)\2345Soft\2345Explorer"):
-                    sleep(2)
-                    os.system('taskkill /IM 2345Explorer.exe /F')
-                    continue
-            else:
-                failure.append("2345浏览器")
-                continue
+            install_from_image(each, '2345explorer_k56008174.exe', 0, 0.5, 1,
+                               r'D:\Program Files (x86)\2345Soft\2345Explorer', '2345Explorer.exe', kill=True)
+            continue
+
+        if each == "Kugou":
+            install_from_image(each, 'kugou_k56008174_306395.exe', 1, 0.6, 2,
+                               r'D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe', 'KuGou.exe', kill=True)
+            continue
+
+        if each == "QQmusic":
+            install_from_image(each, 'QQMusic_YQQFullStack', 2, 0.6, 2,
+                               r'D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe', 'QQmusic.exe', kill=True)
+            continue
+
+        if each == "WPS":
+            install_from_image(each, 'wpssetup_k56008174_281235.exe', 2, 0.6, 8)
+            continue
+
+        if each == "163music":
+            install_from_image(each, each, 3, 0.6, 2, r'D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe',
+                               'cloudmusic.exe', kill=True)
+            continue
+
+        if each == "SougouPY":
+            install_from_image(each, each, 3, 0.6, 2)
+            continue
+
+        if each == "PS CS3":
+            install_from_image(each, each, 1, 0.8, 2)
+            continue
 
         if each == "IQIYI":
             app = Application().start(os.path.join(os.getcwd(), "app_pkg", each, "iqiyi_k56008174_107328.exe"))
@@ -219,89 +255,6 @@ if __name__ == '__main__':
                 else:
                     sleep(3)
             continue
-
-        if each == "Kugou":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(
-                os.path.join(os.getcwd(), "app_pkg", each, "kugou_k56008174_306395.exe"))
-            sleep(2)
-            check = gui.gui_run(each, 1, 0.6, sleep_time=2)
-            if check:
-                if connect_progaram(r"D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe"):
-                    sleep(2)
-                    os.system('taskkill /IM KuGou.exe /F')
-                    continue
-            else:
-                failure.append("酷狗音乐")
-                continue
-
-        if each == "QQmusic":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(
-                os.path.join(os.getcwd(), "app_pkg", each, "QQMusic_YQQFullStack"))
-            sleep(2)
-            check = gui.gui_run(each, 2, 0.6, sleep_time=2)
-            if check:
-                if connect_progaram(r"D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe"):
-                    sleep(2)
-                    os.system('taskkill /IM QQmusic.exe /F')
-                    continue
-            else:
-                failure.append("QQ音乐")
-                continue
-
-        if each == "WPS":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(
-                os.path.join(os.getcwd(), "app_pkg", each, "wpssetup_k56008174_281235.exe"))
-            sleep(2)
-            check = gui.gui_run(each, 2, 0.6, sleep_time=8)
-            sleep(5)
-            if check:
-                while not temp.is_process_running():
-                    break
-                continue
-            else:
-                failure.append("WPS")
-                continue
-
-        if each == "163music":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
-            sleep(2)
-            check = gui.gui_run(each, 3, 0.6, sleep_time=2)
-            if check:
-                if connect_progaram(r"D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe"):
-                    sleep(2)
-                    os.system('taskkill /IM cloudmusic.exe /F')
-                    continue
-            else:
-                failure.append("网易云音乐")
-                continue
-
-        if each == "SougouPY":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
-            sleep(.5)
-            check = gui.gui_run(each, 3, 0.6, sleep_time=2)
-            if check:
-                while not temp.is_process_running():
-                    break
-                continue
-            else:
-                failure.append("搜狗输入法")
-                continue
-
-        if each == "PS CS3":
-            desk_top()
-            temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
-            sleep(2)
-            check = gui.gui_run(each, 1, 0.8)
-            if check:
-                continue
-            else:
-                failure.append("PS CS3")
-                continue
 
         if each == "Chrome":  # 谷歌浏览器打开自动安装不需要任何按钮
             temp = Application(backend=type_menu[each]).start(os.path.join(os.getcwd(), "app_pkg", each, each))
