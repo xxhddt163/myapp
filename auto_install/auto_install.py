@@ -222,7 +222,7 @@ if __name__ == '__main__':
             continue
 
         if each == "WPS":
-            install_from_image(each, 'wpssetup_k56008174_281235.exe', 8, 0.9, 8)
+            install_from_image(each, 'wpssetup_k56008174_281235.exe', 8, 0.9, 2)
             continue
 
         if each == "163music":
