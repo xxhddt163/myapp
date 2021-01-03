@@ -35,8 +35,10 @@ def gui_run(app_name: str, key_index: int, confid: float or int, sleep_time: int
                     pyperclip.copy('d')
                     hotkey('ctrl', 'v')
                     count = 0
+                    sleep(0.5)
                 else:
                     click(x, y)
+                    sleep(1)
                     count = 0
                 break
             else:
