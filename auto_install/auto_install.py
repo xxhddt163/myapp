@@ -32,17 +32,6 @@ def new_window_ready_path(backend, path, title):
         return application
 
 
-def connect_progaram(path):
-    """通过路径连接运行的程序"""
-    while True:
-        try:
-            Application().connect(path=path)
-        except:
-            continue
-        else:
-            return True
-
-
 def new_window_ready_title(title1, title2, mode="win32"):
     """通过title名判断新的窗口是否连接成功"""
     while True:
@@ -103,7 +92,7 @@ def menu_format(choice_list):
 
 
 def install_from_image(program_name: str, setup_name: str, edit_index: int, confidence: int or float,
-                       sleep_time: int, kill_path: str = '', kill_process: str = '', kill: bool = False, ) -> None:
+                       sleep_time: int, kill_process: str = '', kill: bool = False, ) -> None:
     """
     所有通过识别截图定位的程序都通过该函数安装
     :param program_name: 程序名字
@@ -111,7 +100,6 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
     :param edit_index:  Edit截图文件名
     :param confidence:  匹配图片的精度 最高为 1
     :param sleep_time:  每次匹配图片失败等待的时间
-    :param kill_path:  程序安装完后所在路径
     :param kill_process: 结束的进程名称
     :param kill:  安装完程序后是否要结束对应进程（默认为False）
     :return: None
@@ -124,9 +112,8 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
             while not prom.is_process_running():
                 break
         elif kill:  # 安装完程序后会启动程序
-            if connect_progaram(kill_path):
-                sleep(2)
-                os.system(f'taskkill /IM {kill_process} /F')
+            sleep(5)
+            os.system(f'taskkill /IM {kill_process} /F')
     else:
         failure.extend(menu_format(program_name.split()))
 
@@ -197,8 +184,6 @@ if __name__ == '__main__':
     menu = load_menu()
 
     os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
-    os.system('netsh interface ip set dns name="以太网" source=static addr=114.114.114.114')  # 修改DNS
-    os.system('netsh interface ip set dns name="WLAN" source=static addr=114.114.114.114')
 
     for each in menu:
 
@@ -207,18 +192,15 @@ if __name__ == '__main__':
             continue
 
         if each == "2345explorer":
-            install_from_image(each, '2345explorer_k56008174.exe', 0, 0.5, 1,
-                               r'D:\Program Files (x86)\2345Soft\2345Explorer', '2345Explorer.exe', kill=True)
+            install_from_image(each, '2345explorer_k56008174.exe', 0, 0.5, 1, '2345Explorer.exe', kill=True)
             continue
 
         if each == "Kugou":
-            install_from_image(each, 'kugou_k56008174_306395.exe', 1, 0.6, 2,
-                               r'D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe', 'KuGou.exe', kill=True)
+            install_from_image(each, 'kugou_k56008174_306395.exe', 1, 0.6, 2, 'KuGou.exe', kill=True)
             continue
 
         if each == "QQmusic":
-            install_from_image(each, 'QQMusic_YQQFullStack', 2, 0.6, 2,
-                               r'D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe', 'QQmusic.exe', kill=True)
+            install_from_image(each, 'QQMusic_YQQFullStack', 2, 0.6, 2, 'QQmusic.exe', kill=True)
             continue
 
         if each == "WPS":
@@ -226,8 +208,7 @@ if __name__ == '__main__':
             continue
 
         if each == "163music":
-            install_from_image(each, each, 3, 0.6, 2, r'D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe',
-                               'cloudmusic.exe', kill=True)
+            install_from_image(each, each, 3, 0.6, 2, 'cloudmusic.exe', kill=True)
             continue
 
         if each == "SougouPY":
@@ -334,10 +315,10 @@ if __name__ == '__main__':
                 p.button_click()
 
         if each == "QQ":
-            sleep(3)
+            sleep(5)
             os.system('taskkill /IM QQ.exe /F')  # 关闭自动打开的QQ程序
         if each == "Wechat":
-            sleep(3)
+            sleep(5)
             os.system('taskkill /IM WeChat.exe /F')  # 关闭自动打开的微信程序
         if each == "Winrar":
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
