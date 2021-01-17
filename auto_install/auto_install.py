@@ -32,6 +32,17 @@ def new_window_ready_path(backend, path, title):
         return application
 
 
+def connect_progaram(path):
+    """通过路径连接运行的程序"""
+    while True:
+        try:
+            Application().connect(path=path)
+        except:
+            continue
+        else:
+            return True
+
+
 def new_window_ready_title(title1, title2, mode="win32"):
     """通过title名判断新的窗口是否连接成功"""
     while True:
@@ -53,11 +64,13 @@ def control_check(application, control, edit_info="", wait_time=100):
     if "Button" in control or "CheckBox" in control or "ListBox" in control:
         if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
             control].exists():
-            application.top_window()[control].click_input()
+            application.top_window()[control].click()
+            sleep(1)
     elif "Edit" in control:
         if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
             control].exists():
             application.top_window()[control].set_text(edit_info)
+            sleep(1)
 
 
 def desk_top():
@@ -92,7 +105,7 @@ def menu_format(choice_list):
 
 
 def install_from_image(program_name: str, setup_name: str, edit_index: int, confidence: int or float,
-                       sleep_time: int, kill_process: str = '', kill: bool = False, ) -> None:
+                       sleep_time: int, kill_path: str = '', kill_process: str = '', kill: bool = False, ) -> None:
     """
     所有通过识别截图定位的程序都通过该函数安装
     :param program_name: 程序名字
@@ -100,6 +113,7 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
     :param edit_index:  Edit截图文件名
     :param confidence:  匹配图片的精度 最高为 1
     :param sleep_time:  每次匹配图片失败等待的时间
+    :param kill_path:  程序安装完后所在路径
     :param kill_process: 结束的进程名称
     :param kill:  安装完程序后是否要结束对应进程（默认为False）
     :return: None
@@ -112,8 +126,13 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
             while not prom.is_process_running():
                 break
         elif kill:  # 安装完程序后会启动程序
-            sleep(5)
-            os.system(f'taskkill /IM {kill_process} /F')
+            if connect_progaram(kill_path):
+                if program_name == "2345explorer":
+                    sleep(12)
+                    os.system(f'taskkill /IM {kill_process} /F')
+                else:
+                    sleep(2)
+                    os.system(f'taskkill /IM {kill_process} /F')
     else:
         failure.extend(menu_format(program_name.split()))
 
@@ -192,15 +211,18 @@ if __name__ == '__main__':
             continue
 
         if each == "2345explorer":
-            install_from_image(each, '2345explorer_k56008174.exe', 0, 0.5, 1, '2345Explorer.exe', kill=True)
+            install_from_image(each, '2345explorer_k56008174.exe', 8, 0.5, 1,
+                               r'C:\Program Files (x86)\2345Soft\2345Explorer', '2345Explorer.exe', kill=True)
             continue
 
         if each == "Kugou":
-            install_from_image(each, 'kugou_k56008174_306395.exe', 1, 0.6, 2, 'KuGou.exe', kill=True)
+            install_from_image(each, 'kugou_k56008174_306395.exe', 1, 0.6, 2,
+                               r'D:\Program Files (x86)\KuGou\KGMusic\KuGou.exe', 'KuGou.exe', kill=True)
             continue
 
         if each == "QQmusic":
-            install_from_image(each, 'QQMusic_YQQFullStack', 2, 0.6, 2, 'QQmusic.exe', kill=True)
+            install_from_image(each, 'QQMusic_YQQFullStack', 2, 0.6, 2,
+                               r'D:\Program Files (x86)\Tencent\QQMusic\QQMusic.exe', 'QQmusic.exe', kill=True)
             continue
 
         if each == "WPS":
@@ -208,7 +230,8 @@ if __name__ == '__main__':
             continue
 
         if each == "163music":
-            install_from_image(each, each, 3, 0.6, 2, 'cloudmusic.exe', kill=True)
+            install_from_image(each, each, 3, 0.6, 2, r'D:\Program Files (x86)\Netease\CloudMusic\cloudmusic.exe',
+                               'cloudmusic.exe', kill=True)
             continue
 
         if each == "SougouPY":
@@ -231,7 +254,8 @@ if __name__ == '__main__':
             sleep(8)
             while True:
                 if IQY_app.top_window().child_window(title="完成").exists():
-                    IQY_app.top_window()['完成'].click_input()
+                    sleep(1)
+                    IQY_app.top_window()['完成'].click()
                     break
                 else:
                     sleep(3)
@@ -271,7 +295,8 @@ if __name__ == '__main__':
             sleep(120)
             while True:
                 if cad2014_app.top_window().child_window(title="完成").exists():
-                    cad2014_app.top_window()['完成'].click_input()
+                    sleep(1)
+                    cad2014_app.top_window()['完成'].click()
                     break
                 else:
                     sleep(3)
@@ -312,13 +337,16 @@ if __name__ == '__main__':
                 p.main_edit()
             elif class_name == "Button" or class_name == "":
                 p.check_window(title_name, class_name)
-                p.button_click()
+                if "Wechat" in each:
+                    p.button_click()
+                else:
+                    p.button_click2()
 
         if each == "QQ":
-            sleep(5)
+            sleep(3)
             os.system('taskkill /IM QQ.exe /F')  # 关闭自动打开的QQ程序
         if each == "Wechat":
-            sleep(5)
+            sleep(3)
             os.system('taskkill /IM WeChat.exe /F')  # 关闭自动打开的微信程序
         if each == "Winrar":
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
@@ -326,28 +354,28 @@ if __name__ == '__main__':
             window.child_window(title="确定", class_name="Button").click()
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
-            window.child_window(title="完成", class_name="Button").click_input()
+            window.child_window(title="完成", class_name="Button").click()
         if each == "VCRedist":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
+            window.child_window(title="是(&Y)", class_name="Button").click()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
+            window.child_window(title="确定", class_name="Button").click()
         if each == "NF3":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
+            window.child_window(title="是(&Y)", class_name="Button").click()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
+            window.child_window(title="确定", class_name="Button").click()
         if each == "DX":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
+            window.child_window(title="是(&Y)", class_name="Button").click()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
+            window.child_window(title="确定", class_name="Button").click()
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
             p.app.top_window().type_keys("%i")

@@ -35,6 +35,12 @@ class Program:
     def button_click(self):
         """按下指定按钮"""
         self.main.click_input()
+        time.sleep(1)
+        self.main = self.app[self.main_window]
+
+    def button_click2(self):
+        self.main.click()
+        time.sleep(1)
         self.main = self.app[self.main_window]
 
     def main_edit(self):
