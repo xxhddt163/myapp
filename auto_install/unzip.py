@@ -14,7 +14,7 @@ def unzip(choose):
     zip_file = zipfile.ZipFile("auto_install.zip", "r")
     for program in choose:
         for name in zip_file.namelist():
-            if program in name:
+            if program in name or "sys_cra" in name:
                 zip_file.extract(name, extract_dir)
                 print(f"正在将文件{name}解压到{extract_dir}")
     zip_file.extract('auto_install.exe', extract_dir)

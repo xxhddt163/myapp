@@ -73,6 +73,22 @@ def control_check(application, control, edit_info="", wait_time=100):
             sleep(1)
 
 
+def control_check2(application, control, edit_info="", wait_time=100):
+    """根据控件类型自动编辑内容或者点击按钮
+    按钮：自动点击
+    编辑框：填写内容"""
+    if "Button" in control or "CheckBox" in control or "ListBox" in control:
+        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
+            control].exists():
+            application.top_window()[control].click_input()
+            sleep(1)
+    elif "Edit" in control:
+        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
+            control].exists():
+            application.top_window()[control].set_text(edit_info)
+            sleep(1)
+
+
 def desk_top():
     """显示桌面"""
     x, y = size()
@@ -307,9 +323,9 @@ if __name__ == '__main__':
         if each == "Dtalk":
             for i in ['Button', 'Edit', 'Button2', 'CheckBox', 'Button2']:
                 if "Edit" not in i:
-                    control_check(application=p.app, control=i)
+                    control_check2(application=p.app, control=i)
                 elif "Edit" in i:
-                    control_check(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
+                    control_check2(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
             continue
 
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
@@ -386,7 +402,7 @@ if __name__ == '__main__':
                     sleep(10)
                 except RuntimeError:
                     break
-            office_crack = os.path.join(os.getcwd(), "app_pkg", "OFFICE2013", "office13.bat")
+            office_crack = os.path.join(os.getcwd(), "app_pkg", "OFFICE2013", "crack", "AutoPico.exe")
             os.system(office_crack)
 
         if each == "CAD2007":
