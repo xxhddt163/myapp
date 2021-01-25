@@ -38,11 +38,6 @@ class Program:
         time.sleep(1)
         self.main = self.app[self.main_window]
 
-    def button_click2(self):
-        self.main.click()
-        time.sleep(1)
-        self.main = self.app[self.main_window]
-
     def main_edit(self):
         """编辑edit总执行程序"""
         if self.program_type == "win32":

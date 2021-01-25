@@ -64,22 +64,6 @@ def control_check(application, control, edit_info="", wait_time=100):
     if "Button" in control or "CheckBox" in control or "ListBox" in control:
         if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
             control].exists():
-            application.top_window()[control].click()
-            sleep(1)
-    elif "Edit" in control:
-        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
-            control].exists():
-            application.top_window()[control].set_text(edit_info)
-            sleep(1)
-
-
-def control_check2(application, control, edit_info="", wait_time=100):
-    """根据控件类型自动编辑内容或者点击按钮
-    按钮：自动点击
-    编辑框：填写内容"""
-    if "Button" in control or "CheckBox" in control or "ListBox" in control:
-        if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
-            control].exists():
             application.top_window()[control].click_input()
             sleep(1)
     elif "Edit" in control:
@@ -92,7 +76,7 @@ def control_check2(application, control, edit_info="", wait_time=100):
 def desk_top():
     """显示桌面"""
     x, y = size()
-    rightClick(x // 2, y - 2)
+    rightClick(x // 3, y - 2)
     press('s')
     sleep(1)
 
@@ -271,7 +255,7 @@ if __name__ == '__main__':
             while True:
                 if IQY_app.top_window().child_window(title="完成").exists():
                     sleep(1)
-                    IQY_app.top_window()['完成'].click()
+                    IQY_app.top_window()['完成'].click_input()
                     break
                 else:
                     sleep(3)
@@ -312,7 +296,7 @@ if __name__ == '__main__':
             while True:
                 if cad2014_app.top_window().child_window(title="完成").exists():
                     sleep(1)
-                    cad2014_app.top_window()['完成'].click()
+                    cad2014_app.top_window()['完成'].click_input()
                     break
                 else:
                     sleep(3)
@@ -323,9 +307,9 @@ if __name__ == '__main__':
         if each == "Dtalk":
             for i in ['Button', 'Edit', 'Button2', 'CheckBox', 'Button2']:
                 if "Edit" not in i:
-                    control_check2(application=p.app, control=i)
+                    control_check(application=p.app, control=i)
                 elif "Edit" in i:
-                    control_check2(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
+                    control_check(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
             continue
 
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
@@ -353,10 +337,7 @@ if __name__ == '__main__':
                 p.main_edit()
             elif class_name == "Button" or class_name == "":
                 p.check_window(title_name, class_name)
-                if "Wechat" in each:
-                    p.button_click()
-                else:
-                    p.button_click2()
+                p.button_click()
 
         if each == "QQ":
             sleep(3)
@@ -367,31 +348,31 @@ if __name__ == '__main__':
         if each == "Winrar":
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
-            window.child_window(title="确定", class_name="Button").click()
+            window.child_window(title="确定", class_name="Button").click_input()
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
-            window.child_window(title="完成", class_name="Button").click()
+            window.child_window(title="完成", class_name="Button").click_input()
         if each == "VCRedist":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click()
+            window.child_window(title="是(&Y)", class_name="Button").click_input()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click()
+            window.child_window(title="确定", class_name="Button").click_input()
         if each == "NF3":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click()
+            window.child_window(title="是(&Y)", class_name="Button").click_input()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click()
+            window.child_window(title="确定", class_name="Button").click_input()
         if each == "DX":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click()
+            window.child_window(title="是(&Y)", class_name="Button").click_input()
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click()
+            window.child_window(title="确定", class_name="Button").click_input()
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
             p.app.top_window().type_keys("%i")
