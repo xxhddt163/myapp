@@ -65,12 +65,12 @@ def control_check(application, control, edit_info="", wait_time=100):
         if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
             control].exists():
             application.top_window()[control].click_input()
-            sleep(1)
+            sleep(.5)
     elif "Edit" in control:
         if application.top_window()[control].wait("ready", timeout=wait_time) and application.top_window()[
             control].exists():
             application.top_window()[control].set_text(edit_info)
-            sleep(1)
+            sleep(.5)
 
 
 def desk_top():
@@ -133,8 +133,19 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
                 else:
                     sleep(2)
                     os.system(f'taskkill /IM {kill_process} /F')
+        txt_change(each)
     else:
         failure.extend(menu_format(program_name.split()))
+
+
+def txt_change(prom_name: str) -> None:
+    """
+    :param prom_name: 需要删除的程序名字
+    :return:
+    """
+    menu_change.remove(prom_name)
+    with open("menu.txt", mode="w") as file:
+        file.write("、".join(menu_change))
 
 
 if __name__ == '__main__':
@@ -201,6 +212,7 @@ if __name__ == '__main__':
                         }
 
     menu = load_menu()
+    menu_change = menu.copy()
 
     os.system('netsh advfirewall set allprofiles state off')  # 关闭防火墙
 
@@ -256,6 +268,7 @@ if __name__ == '__main__':
                 if IQY_app.top_window().child_window(title="完成").exists():
                     sleep(1)
                     IQY_app.top_window()['完成'].click_input()
+                    txt_change(each)
                     break
                 else:
                     sleep(3)
@@ -269,6 +282,7 @@ if __name__ == '__main__':
                 if not temp.is_process_running():
                     break
             os.system('taskkill /IM chrome.exe /F')
+            txt_change(each)
             continue
 
         if each == "CAD2014":
@@ -297,6 +311,7 @@ if __name__ == '__main__':
                 if cad2014_app.top_window().child_window(title="完成").exists():
                     sleep(1)
                     cad2014_app.top_window()['完成'].click_input()
+                    txt_change(each)
                     break
                 else:
                     sleep(3)
@@ -310,6 +325,7 @@ if __name__ == '__main__':
                     control_check(application=p.app, control=i)
                 elif "Edit" in i:
                     control_check(application=p.app, control=i, edit_info=r"D:\Program Files (x86)\DingDing")
+            txt_change(each)
             continue
 
         if each == "OFFICE2013":  # office2013获取不到按钮用快捷键实现安装
@@ -342,9 +358,11 @@ if __name__ == '__main__':
         if each == "QQ":
             sleep(3)
             os.system('taskkill /IM QQ.exe /F')  # 关闭自动打开的QQ程序
+            txt_change(each)
         if each == "Wechat":
             sleep(3)
             os.system('taskkill /IM WeChat.exe /F')  # 关闭自动打开的微信程序
+            txt_change(each)
         if each == "Winrar":
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
@@ -352,6 +370,7 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
             window.child_window(title="完成", class_name="Button").click_input()
+            txt_change(each)
         if each == "VCRedist":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
@@ -359,6 +378,7 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
+            txt_change(each)
         if each == "NF3":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
@@ -366,6 +386,7 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
+            txt_change(each)
         if each == "DX":
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
@@ -373,6 +394,7 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
             window = app["信息"]
             window.child_window(title="确定", class_name="Button").click_input()
+            txt_change(each)
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
             p.app.top_window().type_keys("%i")
@@ -385,6 +407,7 @@ if __name__ == '__main__':
                     break
             office_crack = os.path.join(os.getcwd(), "app_pkg", "OFFICE2013", "crack", "AutoPico.exe")
             os.system(office_crack)
+            txt_change(each)
 
         if each == "CAD2007":
             app = new_window_ready_title("AutoCAD 2007 安装", "下一步(&N)>")
@@ -418,13 +441,16 @@ if __name__ == '__main__':
             sleep(1)
             crack_path = os.path.join(os.getcwd(), "app_pkg", "CAD2007", "crack", "lacadp.dll")
             os.system(f'xcopy "{crack_path}" "D:\\Program Files\CAD2007\\lacadp.dll" /Y')
+            txt_change(each)
 
         if each == "360drv":
             sleep(3)
             os.system('taskkill /IM 360DrvMgr.exe /F')
+            txt_change(each)
         if each == "TXvideo":
             sleep(3)
             os.system('taskkill /IM QQLive.exe /F')
+            txt_change(each)
 
     end_time = (strftime("%H:%M", localtime()))
     menu = menu_format(menu)

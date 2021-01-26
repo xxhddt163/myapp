@@ -35,7 +35,7 @@ class Program:
     def button_click(self):
         """按下指定按钮"""
         self.main.click_input()
-        time.sleep(1)
+        time.sleep(.5)
         self.main = self.app[self.main_window]
 
     def main_edit(self):
