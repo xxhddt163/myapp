@@ -76,7 +76,7 @@ def control_check(application, control, edit_info="", wait_time=100):
 def desk_top():
     """显示桌面"""
     x, y = size()
-    rightClick(x // 3, y - 2)
+    rightClick(x - x // 3, y - 2)
     press('s')
     sleep(1)
 
@@ -118,7 +118,6 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
     :param kill:  安装完程序后是否要结束对应进程（默认为False）
     :return: None
     """
-    desk_top()  # 调用返回桌面函数
     prom = Application().start(os.path.join(os.getcwd(), "app_pkg", program_name, setup_name))  # 打开指定的安装程序
     result = gui.gui_run(app_name=program_name, key_index=edit_index, confid=confidence, sleep_time=sleep_time)  # 检测结果
     if result:
