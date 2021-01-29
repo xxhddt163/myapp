@@ -1,62 +1,105 @@
-import auto_install
-from time import sleep
 from pywinauto import Application
-import gui
-from pyautogui import locateOnScreen, tripleClick, hotkey, doubleClick, click
+from pyautogui import locateOnScreen, click, tripleClick, hotkey
+from time import sleep
+from os import getcwd, listdir
 from os.path import join
-from os import getcwd
-import pyperclip
-import cv2
+from pyperclip import copy, paste
+
+
+def new_window_ready_title(title):
+    """通过title名判断新的窗口是否连接成功"""
+    while True:
+        try:
+            application = Application().connect(title_re=title)
+            if application.top_window().wait("ready", timeout=20):
+                return application
+            else:
+                sleep(3)
+                continue
+        except:
+            continue
 
 
 def crack_cad():
-    """破解CAD2014"""
-    auto_install.desk_top()
-    sleep(.5)
-    cad = Application().start(r'D:\Program Files\Autodesk\AutoCAD 2014\acad.exe')  # 打开CAD程序
-    path = join(getcwd(), "app_pkg", "CAD2014_shot")
-    result = gui.gui_run(app_name='CAD2014', key_index=8, confid=9)  # 点击至激活界面
-    if result:
-        x, y = find_coord(path.join("5.png"), x_add=200)  # 复制申请号
-        tripleClick(x, y)
-        sleep(1)
-        hotkey('ctrl', 'c')
+    cad = Application().start(r'D:\Program Files\Autodesk\AutoCAD 2014\acad.exe')
+    cad.top_window().wait('ready', timeout=20)  # 打开CAD程序并检查是否就绪
+    sleep(2)
+    temp = new_window_ready_title('Autodesk 许可')
+    temp.top_window().wait('ready', timeout=20)  # 检查许可程序是否就绪
+    click_ok = click_button(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step1'))  # 点击许可协议到激活界面
+    if click_ok:
+        x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '0.png'))  # 检测并复制申请号
+        if x and y:
+            tripleClick(x, y)
+            hotkey('ctrl', 'c')
+            key_soft = Application().start(join(getcwd(), 'app_pkg', 'CAD2014', 'crack', 'xf-adsk64'))
+            key_soft.top_window().wait('ready', timeout=20)  # 打开CAD注册机并检测是否就绪
+            key_soft.top_window()['Request :Edit'].set_text(paste())  # 将申请号粘贴进注册机
+            sleep(2)
+            key_soft.top_window()['CButton'].click_input()  # 按下注册机Patch按钮
+            sleep(2)
+            key_soft.top_window()['确定Button'].click_input()  # 按下注册机Patch按钮之后弹出的小窗口
+            sleep(2)
+            for temp in range(1):
+                key_soft.top_window()['GButton'].click_input()  # 按下2次注册机Generate按钮
+            dict_temp = key_soft.top_window()._ctrl_identifiers()
+            for each in dict_temp.keys():  # 通过按钮便签值获取激活码
+                if 'Activation :Edit' in dict_temp[each]:
+                    temp = str(each)
+                    key = temp.split("'")[1]
+                    copy(key)
+                    sleep(2)
+            key_soft.top_window()['QQButton'].click_input()  # 按下注册机Quit按钮
+            x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '1.png'), x_add=0)  # 按下我具有激活码按钮
+            if x and y:
+                click(x, y)
+                hotkey('ctrl', 'v')  # 粘贴激活码
+                sleep(1)
+                x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '2.png'), x_add=0)  # 按下下一步按钮
+                if x and y:
+                    click(x, y)
+                    x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '3.png'), x_add=0)  # 按下完成按钮
+                    if x and y:
+                        click(x, y)
 
-        key_gen = Application().start(join(getcwd(), "app_pkg", "CAD2014", "crack", "key.exe"))  # 打开注册机
-        sleep(3)
-        key_gen.top_window()['Edit'].set_text(pyperclip.paste())  # 将申请号粘贴进注册机
-        sleep(.5)
-        key_gen.top_window()['CButton'].click_input()  # 按下注册机Patch
-        sleep(2)
-        key_gen.top_window()['Button'].click_input()  # 按下弹窗的确定
-        sleep(1)
-        key_gen.top_window()['GButton'].click_input()  # 按下Generate
-        sleep(1)
-        key_gen.top_window()['GButton'].click_input()
 
-        x, y = find_coord(path.join("6.png"), x_add=200)
-        doubleClick(x, y)
-        sleep(1)
-        hotkey('ctrl', 'c')  # 复制激活码
-        key_gen.top_window()['QQButton'].click_input()  # 退出注册机
-        x, y = find_coord(path.join("7.png"))
-        click(x, y)
-        sleep(1)
-        x, y = find_coord(path.join("8.png"))
-        click(x, y)
-        sleep(1)
-        pyperclip.paste()
-        x, y = find_coord(path.join("9.png"))
-        click(x, y)
-        x, y = find_coord(path.join("10.png"))
-        click(x, y)
+def click_button(png_path):
+    """根据路径解析出路径内所有按钮png文件，并按下按钮"""
+    count = 0
+    png_file = listdir(png_path)
+    for file in png_file:
+        while count < 10:
+            if locateOnScreen(join(png_path, file)) is not None:
+                left, top, width, height = locateOnScreen(join(png_path, file))
+                x, y = left + width // 2, top + height // 2
+                click(x, y)
+                count = 0
+                break
+            else:
+                sleep(1)
+                count += 1
+    if count < 10:
+        return True
+    else:
+        return False
 
 
-def find_coord(png_path, x_add=0):
-    for time in range(20):
-        if locateOnScreen(png_path, confidence=9) is not None:
-            left, top, width, height = locateOnScreen(png_path, confidence=9)
+def text_coord(png_path, x_add=200):
+    """根据路径解析出路径内所有按钮png文件，并按下按钮"""
+    count = 0
+    while count < 10:
+        if locateOnScreen(png_path) is not None:
+            left, top, width, height = locateOnScreen(png_path)
             x, y = left + width // 2 + x_add, top + height // 2
             return x, y
         else:
-            continue
+            sleep(1)
+            count += 1
+    if count < 10:
+        return True
+    else:
+        return False
+
+
+if __name__ == '__main__':
+    crack_cad()

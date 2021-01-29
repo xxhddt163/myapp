@@ -5,6 +5,7 @@ from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import textbox
 import offce_select
+import cad_crack
 from pyautogui import press, size, rightClick, hotkey
 import gui
 from comtypes.gen.UIAutomationClient import *
@@ -118,6 +119,8 @@ def install_from_image(program_name: str, setup_name: str, edit_index: int, conf
     :param kill:  安装完程序后是否要结束对应进程（默认为False）
     :return: None
     """
+    desk_top()
+    sleep(2)
     prom = Application().start(os.path.join(os.getcwd(), "app_pkg", program_name, setup_name))  # 打开指定的安装程序
     result = gui.gui_run(app_name=program_name, key_index=edit_index, confid=confidence, sleep_time=sleep_time)  # 检测结果
     if result:
@@ -311,6 +314,10 @@ if __name__ == '__main__':
                     sleep(1)
                     cad2014_app.top_window()['完成'].click_input()
                     txt_change(each)
+                    desk_top()
+                    cad_crack.crack_cad()
+                    sleep(5)
+                    os.system('taskkill /IM acad.exe /F')
                     break
                 else:
                     sleep(3)
