@@ -26,65 +26,50 @@ def crack_cad():
     sleep(2)
     temp = new_window_ready_title('Autodesk 许可')
     temp.top_window().wait('ready', timeout=20)  # 检查许可程序是否就绪
-    click_ok = click_button(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step1'))  # 点击许可协议到激活界面
-    if click_ok:
-        x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '0.png'))  # 检测并复制申请号
+    png_file = listdir(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step1'))
+
+    for each in png_file:  # 点击许可协议到激活界面
+        x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step1', each), x_add=0)
         if x and y:
-            tripleClick(x, y)
-            hotkey('ctrl', 'c')
-            key_soft = Application().start(join(getcwd(), 'app_pkg', 'CAD2014', 'crack', 'xf-adsk64'))
-            key_soft.top_window().wait('ready', timeout=20)  # 打开CAD注册机并检测是否就绪
-            key_soft.top_window()['Request :Edit'].set_text(paste())  # 将申请号粘贴进注册机
-            sleep(2)
-            key_soft.top_window()['CButton'].click_input()  # 按下注册机Patch按钮
-            sleep(2)
-            key_soft.top_window()['确定Button'].click_input()  # 按下注册机Patch按钮之后弹出的小窗口
-            sleep(2)
-            for temp in range(1):
-                key_soft.top_window()['GButton'].click_input()  # 按下2次注册机Generate按钮
-            dict_temp = key_soft.top_window()._ctrl_identifiers()
-            for each in dict_temp.keys():  # 通过按钮便签值获取激活码
-                if 'Activation :Edit' in dict_temp[each]:
-                    temp = str(each)
-                    key = temp.split("'")[1]
-                    copy(key)
-                    sleep(2)
-            key_soft.top_window()['QQButton'].click_input()  # 按下注册机Quit按钮
-            x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '1.png'), x_add=0)  # 按下我具有激活码按钮
+            click(x, y)
+
+    x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '0.png'))  # 检测并复制申请号
+    if x and y:
+        tripleClick(x, y)
+        hotkey('ctrl', 'c')
+        key_soft = Application().start(join(getcwd(), 'app_pkg', 'CAD2014', 'crack', 'xf-adsk64'))
+        key_soft.top_window().wait('ready', timeout=20)  # 打开CAD注册机并检测是否就绪
+        key_soft.top_window()['Request :Edit'].set_text(paste())  # 将申请号粘贴进注册机
+        sleep(2)
+        key_soft.top_window()['CButton'].click_input()  # 按下注册机Patch按钮
+        sleep(2)
+        key_soft.top_window()['确定Button'].click_input()  # 按下注册机Patch按钮之后弹出的小窗口
+        sleep(2)
+        for temp in range(1):
+            key_soft.top_window()['GButton'].click_input()  # 按下2次注册机Generate按钮
+        dict_temp = key_soft.top_window()._ctrl_identifiers()
+        for each in dict_temp.keys():  # 通过按钮便签值获取激活码
+            if 'Activation :Edit' in dict_temp[each]:
+                temp = str(each)
+                key = temp.split("'")[1]
+                copy(key)
+                sleep(2)
+        key_soft.top_window()['QQButton'].click_input()  # 按下注册机Quit按钮
+        x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '1.png'), x_add=0)  # 按下我具有激活码按钮
+        if x and y:
+            click(x, y)
+            hotkey('ctrl', 'v')  # 粘贴激活码
+            sleep(1)
+            x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '2.png'), x_add=0)  # 按下下一步按钮
             if x and y:
                 click(x, y)
-                hotkey('ctrl', 'v')  # 粘贴激活码
-                sleep(1)
-                x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '2.png'), x_add=0)  # 按下下一步按钮
+                x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '3.png'),
+                                    x_add=0)  # 按下完成按钮
                 if x and y:
                     click(x, y)
-                    x, y = text_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '3.png'), x_add=0)  # 按下完成按钮
-                    if x and y:
-                        click(x, y)
 
 
-def click_button(png_path):
-    """根据路径解析出路径内所有按钮png文件，并按下按钮"""
-    count = 0
-    png_file = listdir(png_path)
-    for file in png_file:
-        while count < 10:
-            if locateOnScreen(join(png_path, file)) is not None:
-                left, top, width, height = locateOnScreen(join(png_path, file))
-                x, y = left + width // 2, top + height // 2
-                click(x, y)
-                count = 0
-                break
-            else:
-                sleep(1)
-                count += 1
-    if count < 10:
-        return True
-    else:
-        return False
-
-
-def text_coord(png_path, x_add=200):
+def object_coord(png_path, x_add=200):
     """根据路径解析出路径内所有按钮png文件，并按下按钮"""
     count = 0
     while count < 10:
