@@ -5,7 +5,7 @@ from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import textbox
 import offce_select
-import cad_crack
+import cad_crack, PS2018_crack
 from pyautogui import press, size, rightClick, hotkey
 import gui
 from comtypes.gen.UIAutomationClient import *
@@ -284,6 +284,32 @@ if __name__ == '__main__':
                 if not temp.is_process_running():
                     break
             os.system('taskkill /IM chrome.exe /F')
+            txt_change(each)
+            continue
+
+        if each == "PSCC2018":  # PSCC2018打开自动安装不需要任何按钮
+            ps_path = os.path.join(os.getcwd(), "app_pkg", each, 'Set-up')
+            pyperclip.copy(ps_path)
+            hotkey('win', 'r')
+            sleep(.5)
+            hotkey('ctrl', 'v')
+            sleep(.5)
+            hotkey('enter')
+            while True:
+                try:
+                    application = Application().connect(path=pyperclip.paste())
+                except:
+                    continue
+                application.top_window().wait("ready", timeout=300)
+                break
+
+            sleep(5)
+            while True:
+                sleep(5)
+                if not application.is_process_running():
+                    break
+            desk_top()
+            PS2018_crack.crack_ps()  # 破解PS
             txt_change(each)
             continue
 
