@@ -14,7 +14,7 @@ def unzip(choose):
     zip_file = zipfile.ZipFile("auto_install.zip", "r")
     for program in choose:
         for name in zip_file.namelist():
-            if program in name or "sys_cra" in name:
+            if program in name:
                 zip_file.extract(name, extract_dir)
                 print(f"正在将文件{name}解压到{extract_dir}")
     zip_file.extract('auto_install.exe', extract_dir)
@@ -30,7 +30,11 @@ def menu_to_file(path, choose):
     :return: None
     """
     with open(join(path, "menu.txt"), "w") as menu_file:
-        menu_file.write("、".join(choose))
+        if 'sys_cra' not in choose:
+            menu_file.write("、".join(choose))
+        else:
+            choose.remove('sys_cra')
+            menu_file.write("、".join(choose))
 
 
 def menu_format(choice_list):
@@ -50,7 +54,8 @@ def menu_format(choice_list):
                 "酷狗音乐(推荐)": "Kugou",
                 "2345浏览器(推荐)": "2345explorer",
                 "2345拼音输入法(推荐)": "2345pinyin",
-                "WPS(推荐)": "WPS"
+                "WPS(推荐)": "WPS",
+                "系统优化": "sys_cra"
                 }
 
     menu_temp = choice_list.copy()
@@ -62,7 +67,8 @@ def menu_format(choice_list):
 
 if __name__ == '__main__':
     choice = multchoicebox(msg="请选择安装的程序", title="选择程序",
-                           choices=["QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9", "OFFICE2013",
+                           choices=["系统优化", "QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9",
+                                    "OFFICE2013",
                                     "WPS(推荐)", "360驱动大师", "谷歌浏览器", "2345浏览器(推荐)", "腾讯视频", "爱奇艺(推荐)", "PS CS3", "网易云音乐",
                                     "QQ音乐", "酷狗音乐(推荐)", "搜狗输入法", "2345拼音输入法(推荐)", "CAD2007", "CAD2014"])
     menu = menu_format(choice)
