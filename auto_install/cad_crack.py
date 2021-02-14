@@ -62,6 +62,8 @@ def crack_cad():
         sleep(2)
         key_soft.top_window()['确定Button'].click_input()  # 按下注册机Patch按钮之后弹出的小窗口
         sleep(2)
+        key_soft.top_window()['GButton'].click_input()
+        sleep(1)
         key_soft.top_window()['GButton'].click_input()  # 按下2次注册机Generate按钮
         dict_temp = key_soft.top_window()._ctrl_identifiers()
         for each in dict_temp.keys():  # 通过按钮便签值获取激活码
