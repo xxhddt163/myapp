@@ -20,6 +20,23 @@ def new_window_ready_title(title):
             continue
 
 
+def object_coord(png_path, x_add=200):
+    """根据路径解析出路径内所有按钮png文件，并按下按钮"""
+    count = 0
+    while count < 10:
+        if locateOnScreen(png_path) is not None:
+            left, top, width, height = locateOnScreen(png_path)
+            x, y = left + width // 2 + x_add, top + height // 2
+            return x, y
+        else:
+            sleep(1)
+            count += 1
+    if count < 10:
+        return True
+    else:
+        return False
+
+
 def crack_cad():
     cad = Application().start(r'D:\Program Files\Autodesk\AutoCAD 2014\acad.exe')
     cad.top_window().wait('ready', timeout=20)  # 打开CAD程序并检查是否就绪
@@ -67,23 +84,6 @@ def crack_cad():
                                     x_add=0)  # 按下完成按钮
                 if x and y:
                     click(x, y)
-
-
-def object_coord(png_path, x_add=200):
-    """根据路径解析出路径内所有按钮png文件，并按下按钮"""
-    count = 0
-    while count < 10:
-        if locateOnScreen(png_path) is not None:
-            left, top, width, height = locateOnScreen(png_path)
-            x, y = left + width // 2 + x_add, top + height // 2
-            return x, y
-        else:
-            sleep(1)
-            count += 1
-    if count < 10:
-        return True
-    else:
-        return False
 
 
 if __name__ == '__main__':

@@ -55,7 +55,8 @@ def menu_format(choice_list):
                 "2345浏览器(推荐)": "2345explorer",
                 "2345拼音输入法(推荐)": "2345pinyin",
                 "WPS(推荐)": "WPS",
-                "系统优化": "sys_cra"
+                "系统优化": "sys_cra",
+                "天正建筑T20": "T20"
                 }
 
     menu_temp = choice_list.copy()
@@ -70,7 +71,7 @@ if __name__ == '__main__':
                            choices=["系统优化", "QQ", "微信", "钉钉", "Winrar", "VCRedist", "Net Farmework3", "DirectX9",
                                     "OFFICE2013", "WPS(推荐)", "360驱动大师", "谷歌浏览器", "2345浏览器(推荐)", "腾讯视频",
                                     "爱奇艺(推荐)", "PS CS3", "PSCC2018", "PRCC2018", "网易云音乐", "QQ音乐", "酷狗音乐(推荐)",
-                                    "搜狗输入法", "2345拼音输入法(推荐)", "CAD2007", "CAD2014"])
+                                    "搜狗输入法", "2345拼音输入法(推荐)", "3DMAX2014", "CAD2007", "CAD2014", "天正建筑T20"])
     menu = menu_format(choice)
     ex_dir = unzip(menu)
     menu_to_file(ex_dir, menu)

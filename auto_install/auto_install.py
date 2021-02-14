@@ -5,7 +5,7 @@ from time import localtime, strftime, sleep
 from pywinauto import Application
 from easygui import textbox
 import offce_select
-import cad_crack, PS2018_crack, PRCC2018_crack
+import cad_crack, PS2018_crack, PRCC2018_crack, max_crack
 from pyautogui import press, size, rightClick, hotkey
 import gui
 from comtypes.gen.UIAutomationClient import *
@@ -96,7 +96,7 @@ def menu_format(choice_list):
 
     menu_dir = {'Wechat': '微信', 'NF3': 'Net Farmework3', '360drv': '360驱动大师', 'Chrome': '谷歌浏览器', 'TXvideo': '腾讯视频',
                 'IQIYI': '爱奇艺', 'DX': 'DirectX9', '163music': '网易云音乐', 'SougouPY': '搜狗输入法', 'QQmusic': 'QQ音乐',
-                'Dtalk': '钉钉', 'Kugou': '酷狗音乐', '2345explorer': '2345浏览器', '2345pinyin': '2345拼音输入法'}
+                'Dtalk': '钉钉', 'Kugou': '酷狗音乐', '2345explorer': '2345浏览器', '2345pinyin': '2345拼音输入法', 'T20': '天正建筑T20'}
 
     menu_temp = choice_list.copy()
     for item in menu_temp:
@@ -339,6 +339,109 @@ if __name__ == '__main__':
             txt_change(each)
             continue
 
+        if each == "T20":
+            t20 = Application().start(os.path.join(os.getcwd(), "app_pkg", each, "setup.exe"))
+            t20.top_window().exists(timeout=100)
+
+            T20_dict = {'我接受许可证协议中的条款((&A)RadioButton': '',
+                        '下一步(&N) >Button': '',
+                        '浏览(&R)...Button': '',
+                        '路径(&P)：Edit': 'D:\Tangent\TArchT20V5',
+                        '确定Button': '',
+                        '完成Button': ''
+                        }
+
+            for step in ['我接受许可证协议中的条款((&A)RadioButton', '下一步(&N) >Button', '浏览(&R)...Button', '路径(&P)：Edit',
+                         '确定Button', '下一步(&N) >Button', '下一步(&N) >Button']:
+                count = 18
+                while count > 0:
+                    if t20.top_window()[step].exists():
+                        control_check(application=t20, control=step, edit_info=T20_dict[step])
+                        sleep(1)
+                        break
+                    else:
+                        sleep(1)
+                        count -= 1
+                sleep(.3)
+
+            while count > 0:
+                if t20.top_window()['InstallShield Wizard 完成'].exists():
+                    control_check(application=t20, control='完成Button', edit_info=T20_dict[step])
+                    sleep(1)
+                    break
+                else:
+                    sleep(5)
+                    count -= 1
+            sleep(.5)
+
+            for num in range(18, 24):  # 复制破解文件
+                crack_path = os.path.join(os.getcwd(), "app_pkg", "T20", "Crack", "sys" + str(num) + "x64",
+                                          "tch_initstart.arx")
+                os.system(f'xcopy "{crack_path}" "D:\\Tangent\\TArchT20V5\\sys{str(num)}x64\\tch_initstart.arx" /Y')
+                sleep(.5)
+            crack_path = os.path.join(os.getcwd(), "app_pkg", "T20", "Crack", "user.reg")
+            pyperclip.copy(crack_path)
+            hotkey('win', 'r')
+            sleep(.5)
+            hotkey('ctrl', 'v')
+            sleep(.5)
+            hotkey('enter')
+            sleep(1)
+            hotkey('enter')
+            sleep(1)
+            hotkey('enter')
+            txt_change(each)
+            continue
+
+        if each == "3DMAX2014":
+            setup_path = os.path.join(os.getcwd(), "app_pkg", each, "Setup.exe")
+            pyperclip.copy(setup_path)
+            hotkey('win', 'r')
+            sleep(.5)
+            hotkey('ctrl', 'v')
+            sleep(.5)
+            hotkey('enter')
+            max_temp = new_window_ready_title('Autodesk 3ds Max 2014', '退出')
+
+            max_dict = {'ListBox3': '',
+                        '我接受Button': '',
+                        '下一步Button': '',
+                        '序列号:Edit': '666',
+                        'Edit2': '69696969',
+                        '产品密钥:Edit5': '128F1',
+                        '安装路径:Edit': 'D:\Program Files\Autodesk',
+                        '安装Button': ''}
+
+            for step in ['ListBox3', '我接受Button', '下一步Button', '序列号:Edit', 'Edit2', '产品密钥:Edit5', '下一步Button',
+                         '安装路径:Edit', '安装Button']:
+                count = 18
+                while count > 0:
+                    if max_temp.top_window()[step].exists():
+                        control_check(application=max_temp, control=step, edit_info=max_dict[step])
+                        if '下一步' in step or '安装' in step or 'ListBox3' in step:
+                            sleep(2)
+                            break
+                        else:
+                            break
+                    else:
+                        sleep(1)
+                        count -= 1
+            sleep(120)
+            while True:
+                if max_temp.top_window().child_window(title="完成").exists():
+                    sleep(3)
+                    max_temp.top_window()['完成'].click_input()
+                    break
+                else:
+                    sleep(3)
+
+            txt_change(each)
+            desk_top()
+            max_crack.crack_3dmax()
+            sleep(5)
+            os.system('taskkill /IM 3dsmax.exe /F')
+            continue
+
         if each == "CAD2014":
             cad_path = os.path.join(os.getcwd(), "app_pkg", each, "Setup.exe")
             pyperclip.copy(cad_path)
@@ -363,16 +466,31 @@ if __name__ == '__main__':
             sleep(120)
             while True:
                 if cad2014_app.top_window().child_window(title="完成").exists():
-                    sleep(1)
+                    sleep(3)
                     cad2014_app.top_window()['完成'].click_input()
-                    txt_change(each)
-                    desk_top()
-                    cad_crack.crack_cad()
-                    sleep(5)
-                    os.system('taskkill /IM acad.exe /F')
                     break
                 else:
                     sleep(3)
+
+            txt_change(each)
+            desk_top()
+            cad_crack.crack_cad()
+            sleep(5)
+            os.system('taskkill /IM acad.exe /F')
+            continue
+
+        if each == "CAD2014_cra":
+            desk_top()
+            cad_crack.crack_cad()
+            sleep(5)
+            os.system('taskkill /IM acad.exe /F')
+            txt_change(each)
+            continue
+
+        if each == "3DMAX_cra":
+            desk_top()
+            max_crack.crack_3dmax()
+            sleep(5)
             continue
 
         p = Program(os.getcwd(), each, type_menu[each], main_window_name[each])
