@@ -165,7 +165,6 @@ if __name__ == '__main__':
                             ["安装", "Button"]],
                  "VCRedist": [["确定", "Button"]],
                  "NF3": [["确定", "Button"]],
-                 "DX": [["确定", "Button"]],
                  "OFFICE2013": [["Edit8", ""]],
                  "CAD2007": [["确定", "Button"]],
                  "360drv": [["已经阅读并同意", "Button"],
@@ -186,7 +185,6 @@ if __name__ == '__main__':
                  "360drv": "win32",
                  "Chrome": "win32",
                  "TXvideo": "win32",
-                 "DX": "win32",
                  "PS CS3": "win32",
                  "163music": "uia",
                  "SougouPY": "win32",
@@ -205,7 +203,6 @@ if __name__ == '__main__':
                         "360drv": "欢迎使用 360驱动大师",
                         "Chrome": "",
                         "TXvideo": "腾讯视频 2020 安装程序 ",
-                        "DX": "DirectX 9.0c 一键安装 - IT天空出品",
                         "PS CS3": "安装 - Adobe Photoshop CS3 Extended",
                         "163music": "",
                         "SougouPY": "",
@@ -336,6 +333,37 @@ if __name__ == '__main__':
                     break
             desk_top()
             PRCC2018_crack.crack_pr()  # 破解PS
+            txt_change(each)
+            continue
+
+        if each == "DX" or each == "VCRedist" or each == "NF3":
+            desk_top()
+            pg = Application().start(os.path.join(os.getcwd(), "app_pkg", each, each))
+            pg.top_window().exists(timeout=100)
+
+            ok_dict = {'DX': 'DirectX 9.0c 安装完成！程序即将退出',
+                       'VCRedist': 'Visual C++ 运行库 安装完成！程序即将退出',
+                       'NF3': '.Net Framework 安装完成！程序即将退出'}
+
+            for step in ['确定Button', '是(&Y)Button']:
+                count = 18
+                while count > 0:
+                    if pg.top_window()[step].exists():
+                        pg.top_window()[step].click_input()
+                        sleep(1)
+                        break
+                    else:
+                        sleep(1)
+                        count -= 1
+                sleep(.3)
+
+            while True:
+                if pg.top_window().child_window(title=ok_dict[each]).exists():
+                    sleep(3)
+                    pg.top_window()['确定'].click_input()
+                    break
+                else:
+                    sleep(3)
             txt_change(each)
             continue
 
@@ -562,30 +590,6 @@ if __name__ == '__main__':
             app = new_window_ready_path("win32", r"D:\Program Files\Winrar\Uninstall", "WinRAR 简体中文版安装")
             window = app["WinRAR 简体中文版安装"]
             window.child_window(title="完成", class_name="Button").click_input()
-            txt_change(each)
-        if each == "VCRedist":
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
-            window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "VCRedist", "VCRedist"), "信息")
-            window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
-            txt_change(each)
-        if each == "NF3":
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
-            window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "NF3", "NF3"), "信息")
-            window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
-            txt_change(each)
-        if each == "DX":
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
-            window = app["信息"]
-            window.child_window(title="是(&Y)", class_name="Button").click_input()
-            app = new_window_ready_path("win32", os.path.join(os.getcwd(), "app_pkg", "DX", "DX"), "信息")
-            window = app["信息"]
-            window.child_window(title="确定", class_name="Button").click_input()
             txt_change(each)
         if each == "OFFICE2013":
             p.app.top_window().wait("ready", timeout=300)
