@@ -62,16 +62,20 @@ def crack_cad():
         sleep(2)
         key_soft.top_window()['确定Button'].click_input()  # 按下注册机Patch按钮之后弹出的小窗口
         sleep(2)
-        key_soft.top_window()['GButton'].click_input()
+        key_soft.top_window()['GButton'].click_input()  # 按下注册机Gen按钮
         sleep(1)
-        key_soft.top_window()['GButton'].click_input()  # 按下2次注册机Generate按钮
-        dict_temp = key_soft.top_window()._ctrl_identifiers()
-        for each in dict_temp.keys():  # 通过按钮便签值获取激活码
-            if 'Activation :Edit' in dict_temp[each]:
-                temp = str(each)
-                key = temp.split("'")[1]
+        while True:
+            dict_temp = key_soft.top_window()._ctrl_identifiers()
+            for each in dict_temp.keys():  # 通过按钮便签值获取激活码
+                if 'Activation :Edit' in dict_temp[each]:
+                    temp = str(each)
+            key = temp.split("'")[1]
+            if len(key) == 57:
                 copy(key)
-                sleep(2)
+                sleep(1)
+                break
+            else:
+                key_soft.top_window()['GButton'].click_input()
         key_soft.top_window()['QQButton'].click_input()  # 按下注册机Quit按钮
         x, y = object_coord(join(getcwd(), 'app_pkg', 'CAD2014_shot', 'step2', '1.png'), x_add=0)  # 按下我具有激活码按钮
         if x and y:

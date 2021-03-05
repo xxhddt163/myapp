@@ -454,21 +454,14 @@ if __name__ == '__main__':
                     else:
                         sleep(1)
                         count -= 1
-            sleep(120)
+            sleep(200)
             while True:
-                try:
-                    temp = Application().connect(title_re='文件正在使用')
-                    if temp.top_window().child_window(title='忽略(&I)').exists():
-                        sleep(2)
-                        temp.top_window().child_window(title='忽略(&I)').click_input()
-                except:
-                    pass
-
                 if max_temp.top_window().child_window(title="完成").exists():
                     sleep(3)
                     max_temp.top_window()['完成'].click_input()
                     break
                 else:
+                    hotkey('alt', 'i')
                     sleep(3)
 
             txt_change(each)
@@ -499,21 +492,14 @@ if __name__ == '__main__':
                     sleep(1)
                 elif "Edit" in i:
                     control_check(application=cad2014_app, control=i, edit_info=r"D:\Program Files\Autodesk")
-            sleep(120)
+            sleep(180)
             while True:
-                try:
-                    temp = Application().connect(title_re='文件正在使用')
-                    if temp.top_window().child_window(title='忽略(&I)').exists():
-                        sleep(2)
-                        temp.top_window().child_window(title='忽略(&I)').click_input()
-                except:
-                    pass
-
                 if cad2014_app.top_window().child_window(title="完成").exists():
                     sleep(3)
                     cad2014_app.top_window()['完成'].click_input()
                     break
                 else:
+                    hotkey('alt', 'i')
                     sleep(3)
 
             txt_change(each)
